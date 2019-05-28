@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ClassDiagram name="Disgramn">
+  <ClassDiagramComponents>
+    <Class name="abstract Ship" package="" visibility="public" xPosition="408.0" yPosition="251.0">
+      <Fields>
+        <Field name="firingTimer" type="Timer" visibility="private"/>
+        <Field name="shipNumber" type="int" visibility="private"/>
+        <Field name="health" type="int" visibility="private"/>
+        <Field name="damageOutput" type="int" visibility="private"/>
+        <Field name="speed" type="int" visibility="private"/>
+        <Field name="walls" type="Wall[]" visibility="private"/>
+        <Field name="engine" type="Engine" visibility="private"/>
+        <Field name="canFire" type="boolean" visibility="private"/>
+        <Field name="ships" type="Ship[]" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="Image" name="image"/>
+          <Argument type="int" name="amount"/>
+          <Argument type="int" name="delay"/>
+        </Constructor>
+      </Constructors>
+      <Methods>
+        <Method name="action" returnType="void" visibility="public"/>
+        <Method name="fire" returnType="void" visibility="public"/>
+        <Method name="checkWalls" returnType="void" visibility="public"/>
+        <Method name="destroyed" returnType="void" visibility="public"/>
+        <Method name="checkPlayer" returnType="void" visibility="public"/>
+        <Method name="changeDirection" returnType="Coordinate" visibility="public">
+          <Argument type="Coordinate" name="coordinates"/>
+        </Method>
+      </Methods>
+    </Class>
+    <Class name="abstract EnemyShip" package="" visibility="public" xPosition="491.0" yPosition="722.0">
+      <Fields>
+        <Field name="totalNumber" type="int" visibility="private"/>
+        <Field name="shipNumber" type="int" visibility="private"/>
+        <Field name="player" type="PlayerShip" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods/>
+    </Class>
+    <Class name="PlayerShip" package="" visibility="public" xPosition="23.0" yPosition="366.0">
+      <Fields>
+        <Field name="upgrades" type="Upgrade[]" visibility="private"/>
+        <Field name="firingTimer" type="Timer" visibility="private"/>
+        <Field name="upgradeTimers" type="Timer[]" visibility="private"/>
+      </Fields>
+      <Constructors>
+        <Constructor visibility="public">
+          <Argument type="Image" name="image"/>
+          <Argument type="int" name="amount"/>
+          <Argument type="int" name="delay"/>
+        </Constructor>
+      </Constructors>
+      <Methods>
+        <Method name="pickUpUpgrade" returnType="int" visibility="public">
+          <Argument type="int" name="upgradeType"/>
+        </Method>
+        <Method name="useUpgrade" returnType="int" visibility="public">
+          <Argument type="int" name="upgradeType"/>
+        </Method>
+        <Method name="useUpgradeSlot" returnType="void" visibility="public"/>
+        <Method name="keyReleased" returnType="KeyEvent" visibility="public">
+          <Argument type="KeyEvent" name="evt"/>
+        </Method>
+        <Method name="keyPressed" returnType="KeyEvent" visibility="public">
+          <Argument type="KeyEvent" name="evt"/>
+        </Method>
+      </Methods>
+    </Class>
+    <Class name="SpeedyShip" package="" visibility="public" xPosition="140.0" yPosition="657.0">
+      <Fields/>
+      <Constructors>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods/>
+    </Class>
+    <Class name="BulkyShip" package="" visibility="public" xPosition="823.0" yPosition="657.0">
+      <Fields/>
+      <Constructors>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods/>
+    </Class>
+    <Class name="BossShip" package="" visibility="public" xPosition="154.0" yPosition="783.0">
+      <Fields/>
+      <Constructors>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods/>
+    </Class>
+    <Class name="ExploadingShip" package="" visibility="public" xPosition="835.0" yPosition="783.0">
+      <Fields/>
+      <Constructors>
+        <Constructor visibility="public"/>
+      </Constructors>
+      <Methods/>
+    </Class>
+    <Class name="Bullet" package="" visibility="public" xPosition="823.0" yPosition="329.0">
+      <Fields>
+        <Field name="shipNumberFired" type="int" visibility="private"/>
+        <Field name="walls" type="Wall[]" visibility="private"/>
+        <Field name="damage" type="int" visibility="private"/>
+        <Field name="engine" type="Engine" visibility="private"/>
+        <Field name="ships" type="Ship[]" visibility="private"/>
+      </Fields>
+      <Constructors/>
+      <Methods/>
+    </Class>
+  </ClassDiagramComponents>
+  <ClassDiagramRelations>
+    <IsRelation name="is" source="PlayerShip" target="abstract Ship"/>
+    <IsRelation name="is" source="ExploadingShip" target="abstract EnemyShip"/>
+    <IsRelation name="is" source="BulkyShip" target="abstract EnemyShip"/>
+    <IsRelation name="is" source="abstract EnemyShip" target="abstract Ship"/>
+    <IsRelation name="is" source="BossShip" target="abstract EnemyShip"/>
+    <IsRelation name="is" source="SpeedyShip" target="abstract EnemyShip"/>
+  </ClassDiagramRelations>
+</ClassDiagram>

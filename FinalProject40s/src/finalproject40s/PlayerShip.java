@@ -21,7 +21,6 @@ public class PlayerShip extends Ship {
      * constructor for the player ship
      * @param image the image to display to the user to visualize this ship
      * @param amount the amount to move by
-     * @param delay the delay before moving again
      * @param engine the engine that runs the general logic of the game
      */
     public PlayerShip(Image image, int amount, Engine engine) {
@@ -31,7 +30,6 @@ public class PlayerShip extends Ship {
         health = Constants.BASE_PLAYER_HEALTH;
         speed = Constants.BASE_SHIP_MOVEMENT;
         shipNumber = Constants.PLAYER_SHIP_NUMBER;
-        
         canFire = true;
         
         invincible = false;
@@ -72,7 +70,7 @@ public class PlayerShip extends Ship {
             }
         });
         startingCoordinates = coordinates;
-        show();
+        Ship.player = this;
     }
 
 
@@ -210,6 +208,7 @@ public class PlayerShip extends Ship {
     @Override
     public void action() {
         move();
+        redraw();
         checkWalls();
         checkShips();
     }

@@ -1,12 +1,14 @@
 package finalproject40s;
 
 import collections.LinkedList;
+import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 import gameTools.Constants;
 import gameTools.Image;
 import gameTools.Wall;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JLabel;
 import javax.swing.Timer;
 
 /**
@@ -43,21 +45,21 @@ public class Engine {
      * Customizable properties)
      * @param tutorial
      */
-    public Engine(UIGame ui, PropertiesManager manager, boolean tutorial) {
+    public Engine( PropertiesManager manager, boolean tutorial) {
         this.manager = manager;
-        this.ui = ui;
+        ui = new UIGame(this); 
         isRunning = true;
         ui.getContentPane().setBackground(Color.BLACK);
         ui.setSize(1650, 1025);
         ui.setLocationRelativeTo(null);
         ui.setResizable(false);
-        ui.setVisible(true);
         buildPresetImages();
+        ui.setVisible(true);
         playingTime = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (isRunning) {
-                    background.swap();
+//                    background.swap();
                     timeSeconds++;
                     if (timeSeconds >= 60) {
                         timeSeconds -= 60;
@@ -75,7 +77,7 @@ public class Engine {
                 }
             }
         });
-        lives = Constants.BASE_LIVES - manager.difficulty;
+        lives = Constants.BASE_LIVES - 3 + manager.difficulty;
         points = 0;
         spawnTimer.start();
         playingTime.start();
@@ -109,6 +111,7 @@ public class Engine {
         if (!manager.GUEST_ACCOUNT.equals(manager.accountLoggedIn)) {
             manager.accountLoggedIn.pointsInLastGame = points;
         }
+        System.exit(0);
         if (exitType == Constants.EXITED_GAME) {
             Constants.output("You Exited the Game " + "\n You played for " + timeMinutes
                     + " minutes and " + timeSeconds + " seconds \n You gained "
@@ -122,6 +125,7 @@ public class Engine {
             Constants.output(" You have beaten the Space Monsters! Way to go!"
                     + "\n It took you " + timeMinutes + " minutes and " + timeSeconds + " seconds to Win!", true);
         }
+        manager.play();
     }
     
     /**
@@ -129,15 +133,18 @@ public class Engine {
      */
     public void spawnShip() {
         int shipType = getShipType();
-        int x = getXCoordinates();
         if(shipType == Constants.ENEMY_TYPE_GRUNT) {
-            GruntShip ship = new GruntShip(new Image(x, Constants.ENEMY_SPAWN_Y,
-                    25, 25), Constants.BASE_SHIP_MOVEMENT, this);
-            ui.add(ship.image.picture);
+            GruntShip ship = new GruntShip(new Image(getXCoordinates(),
+                    Constants.ENEMY_SPAWN_Y, 25, 25), this, manager.difficulty);
+            add(ship.image.picture);
         } else if(shipType == Constants.ENEMY_TYPE_BULLKY) {
-            
+            BulkyShip ship = new BulkyShip(new Image(getXCoordinates(),
+                    Constants.ENEMY_SPAWN_Y, 35, 35),this, manager.difficulty);
+            add(ship.image.picture);
         } else if(shipType == Constants.ENEMY_TYPE_FAST) {
-            
+            SpeedyShip ship = new SpeedyShip(new Image(getXCoordinates(),
+                    Constants.ENEMY_SPAWN_Y, 25, 25), this, manager.difficulty);
+            add(ship.image.picture);
         } else {
             System.out.println("Error in ship typing ");
         }
@@ -155,7 +162,7 @@ public class Engine {
         Bullet bullet = new Bullet(new Image(ship.coordinates.x, ship.coordinates.y,
                 ship.coordinates.width, ship.coordinates.height),
                 ship.speed * 3, 10, ship, this);
-        ui.add(bullet.image.picture);
+        add(bullet.image.picture);
         return true;
     }
 
@@ -191,18 +198,16 @@ public class Engine {
             @Override
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 player.keyPressed(evt);
-                System.out.println("key p");
             }
 
             @Override
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 player.keyReleased(evt);
-                System.out.println("key r");
             }
         });
         ui.add(closeButton);
         background = new Background(ui);
-        getShipType();
+        ui.add(background.image.picture);
     }
 
     /**
@@ -210,24 +215,49 @@ public class Engine {
      * @return the type of ship thats being created
      */
     private int getShipType() {
-        int random = Constants.random(1, 100);
-        int gruntChance = 35 + (12 * manager.difficulty);
-        System.out.println("chnage " + gruntChance);
-        int bullkyChance = gruntChance + (5 * 12 * manager.difficulty);
-         System.out.println("bulk chance " + bullkyChance);
-        if(random <= gruntChance) return Constants.ENEMY_TYPE_GRUNT;
-        else if (random <= bullkyChance) return Constants.ENEMY_TYPE_BULLKY;
-        else return Constants.ENEMY_TYPE_FAST;
+        return Constants.ENEMY_TYPE_GRUNT;
+        
+//        int random = Constants.random(1, 100);
+//        int gruntChance = 35 + (12 * manager.difficulty);
+//        System.out.println("chnage " + gruntChance);
+//        int bullkyChance = gruntChance + (5 * 12 * manager.difficulty);
+//         System.out.println("bulk chance " + bullkyChance);
+//        if(random <= gruntChance) return Constants.ENEMY_TYPE_GRUNT;
+//        else if (random <= bullkyChance) return Constants.ENEMY_TYPE_BULLKY;
+//        else return Constants.ENEMY_TYPE_FAST;
     }
 
     
-    
+    /**
+     * returns one "randomly" possible x coordinate for a ship to spawn at
+     * @return the x coordinate "randomly" picked to spawn at
+     */
     private int getXCoordinates() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        final int[] OPTIONS = {150, 300, 450, 600, 750, 900, 1050};
+        int random = Constants.random(1, OPTIONS.length);
+        return OPTIONS[random - 1];
     }
 
+    /**
+     * adds the Jlabel to the user interface and adds the background after so
+     * that the background is always in the background
+     * @param object the Jlabel to add
+     * @return if the Label was added or not
+     */
+    public boolean add(JLabel object) {
+        if(object == null) return false;
+        ui.add(object);
+        ui.add(background.image.picture);
+        return true;
+    }
+    
+    
+    
+    /**
+     * spawns the boss ship and creates the bosses health bar at the top of the screen
+     */
     private void spawnBoss() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
 }

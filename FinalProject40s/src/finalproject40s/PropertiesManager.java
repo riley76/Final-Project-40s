@@ -42,7 +42,7 @@ public class PropertiesManager {
     /**
      * starts the menu for the game
      */
-    private void play() {
+    public void play() {
         ui = new UiMenu(this);
         ui.setSize(940, 550);
         ui.setLocationRelativeTo(null);
@@ -401,7 +401,8 @@ public class PropertiesManager {
     public void loadGame(boolean tutorial) {
         GUEST_ACCOUNT.gamesPlayed++;
         if(!accountLoggedIn.equals(GUEST_ACCOUNT)) accountLoggedIn.gamesPlayed++;
-        new Engine(new UIGame(), this, tutorial);
+        ui.dispose();
+        new Engine(this, tutorial);
     } 
     
 }

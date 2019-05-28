@@ -16,15 +16,16 @@ import javax.swing.Timer;
  */
  public class GruntShip extends EnemyShip{
 
-    public GruntShip(Image image, int delay, Engine engine) {
+    public GruntShip(Image image, Engine engine, int difficulty) {
         super(image, Constants.BASE_SHIP_MOVEMENT, engine);
         canFire= true;
         health = Constants.BASE_ENEMY_HEALTH;
-        damageOutput = Constants.BASE_SHIP_DAMAGE;
-        firingTimer = new Timer(1500, new ActionListener() {
+        if(difficulty <= 1)damageOutput = Constants.BASE_SHIP_DAMAGE * 2;
+        else damageOutput = Constants.BASE_SHIP_DAMAGE;
+        firingTimer = new Timer((2 + difficulty) * 500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                fire();
             }
         });
     }
@@ -34,15 +35,6 @@ import javax.swing.Timer;
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public void hit(int damage) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void action() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
           
 
 }

@@ -11,11 +11,14 @@ package finalproject40s;
  */
 public class UIGame extends javax.swing.JFrame {
 
+    Engine engine;
+    
     /**
      * Creates new form UIGame
      */
-    public UIGame() {
+    public UIGame(Engine engine) {
         initComponents();
+        this.engine = engine;
     }
 
     /**
@@ -30,20 +33,26 @@ public class UIGame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setAutoRequestFocus(false);
         setBackground(new java.awt.Color(255, 255, 255));
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1163, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 650, Short.MAX_VALUE)
-        );
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                formKeyReleased(evt);
+            }
+        });
+        getContentPane().setLayout(null);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        engine.player.keyPressed(evt);
+    }//GEN-LAST:event_formKeyPressed
+
+    private void formKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyReleased
+        engine.player.keyReleased(evt);
+    }//GEN-LAST:event_formKeyReleased
 
     
     

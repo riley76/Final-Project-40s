@@ -10,22 +10,15 @@ import javax.swing.Timer;
 public abstract class Ship extends GameCharacter{
 
     public Timer firingTimer;
-
     public int shipNumber;
-
     public int health;
-
     public int damageOutput;
-
     public int speed;
-
     protected Engine engine;
-
     public boolean canFire;
-    
     public int firingDirection;
-
     public static LinkedList<Ship> shipList = new LinkedList<>();
+    public static PlayerShip player;
 
     public Ship(Image hitbox, int amount, Engine engine) {
         super(hitbox, amount, 10);
@@ -75,6 +68,10 @@ public abstract class Ship extends GameCharacter{
                 return;
             }
         }
+    }
+    
+    public boolean checkPlayer() {
+        return isColliding(player);
     }
     
     

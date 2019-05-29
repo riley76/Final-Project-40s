@@ -27,7 +27,7 @@ public class SpeedyShip extends EnemyShip {
 
     @Override
     public Coordinates changeDirection(Coordinates coordinates) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return coordinates;
     }
 
 }

@@ -2,7 +2,6 @@ package finalproject40s;
 
 
 import gameTools.Constants;
-import gameTools.Coordinates;
 import gameTools.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,8 +25,8 @@ public class SpeedyShip extends EnemyShip {
     }
 
     @Override
-    public Coordinates changeDirection(Coordinates coordinates) {
-        return coordinates;
+    public void changeDirection() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

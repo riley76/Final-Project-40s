@@ -27,7 +27,7 @@ public abstract class GameCharacter extends GameObject{
         timer = new Timer(delay, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                action();
+                if(isAlive) action();
             }
         });
         timer.start();        

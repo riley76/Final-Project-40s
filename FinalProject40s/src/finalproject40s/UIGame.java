@@ -19,6 +19,7 @@ public class UIGame extends javax.swing.JFrame {
     public UIGame(Engine engine) {
         initComponents();
         this.engine = engine;
+//        this.requestFocus();
     }
 
     /**

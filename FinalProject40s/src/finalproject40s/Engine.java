@@ -1,7 +1,6 @@
 package finalproject40s;
 
 import collections.LinkedList;
-import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 import gameTools.Constants;
 import gameTools.Image;
 import gameTools.Wall;
@@ -36,11 +35,17 @@ public class Engine {
     private Background background;
     public boolean isRunning;
     public LinkedList<Bullet> bulletList = new LinkedList<>();
+    javax.swing.JButton closeButton;
+    javax.swing.JProgressBar playerHealthBar;
+    Image livesCounter;
+    Image time;
+    
+    
+    
 
     /**
      * default constructor for this class setting everything up
      *
-     * @param ui The UI displayed to the user
      * @param manager the manager that started the program (Used to store
      * Customizable properties)
      * @param tutorial
@@ -53,6 +58,7 @@ public class Engine {
         ui.setSize(1650, 1025);
         ui.setLocationRelativeTo(null);
         ui.setResizable(false);
+        lives = Constants.BASE_LIVES - 3 + manager.difficulty;
         buildPresetImages();
         ui.setVisible(true);
         playingTime = new Timer(1000, new ActionListener() {
@@ -65,8 +71,14 @@ public class Engine {
                         timeSeconds -= 60;
                         timeMinutes++;
                     }
+                    String text = "Time ";
+                    if(timeMinutes >= 10) text = text + timeMinutes;
+                    else text = text + "0" + timeMinutes;
+                    text = text + ":";
+                    if(timeSeconds >= 10) text = text + timeSeconds;
+                    else text = text + "0" + timeSeconds;
+                    time.picture.setText(text);
                 }
-
             }
         });
         spawnTimer = new Timer( 3000 +(2000 * this.manager.difficulty), new ActionListener() {
@@ -77,10 +89,11 @@ public class Engine {
                 }
             }
         });
-        lives = Constants.BASE_LIVES - 3 + manager.difficulty;
         points = 0;
         spawnTimer.start();
         playingTime.start();
+        closeButton.setFocusable(false);
+        ui.requestFocus();
     }
 
     /**
@@ -160,7 +173,7 @@ public class Engine {
             return false;
         }
         Bullet bullet = new Bullet(new Image(ship.coordinates.x, ship.coordinates.y,
-                ship.coordinates.width, ship.coordinates.height),
+                6, 6),
                 ship.speed * 3, 10, ship, this);
         add(bullet.image.picture);
         return true;
@@ -171,7 +184,7 @@ public class Engine {
      * user
      */
     private void buildPresetImages() {
-
+        
         Image[] wallImages = {new Image(0, 0, 10, 905), new Image(0, 0, 1700, 10),
             new Image(1635, 0, 10, 905)};
         walls = new Wall[wallImages.length + 1];
@@ -181,10 +194,9 @@ public class Engine {
         }
         walls[wallImages.length] = new Wall(new Image(0, 905, 1700, 15), true);
         ui.add(walls[wallImages.length].image.picture);
-        player = new PlayerShip(new Image(100, 100, 25, 25), Constants.BASE_SHIP_MOVEMENT, this);
-        player.image.setDebug("", Color.BLUE);
+        player = new PlayerShip(new Image(800, 750, 25, 45), Constants.BASE_SHIP_MOVEMENT, this);
         ui.add(player.image.picture);
-        javax.swing.JButton closeButton = new javax.swing.JButton();
+        closeButton = new javax.swing.JButton();
         closeButton.setBounds(1, 920, 100, 75);
         closeButton.setText("Exit Game");
         closeButton.setBackground(Color.RED);
@@ -206,10 +218,44 @@ public class Engine {
             }
         });
         ui.add(closeButton);
+        Image healthLabel = new Image(110, 928, 60, 60);
+        healthLabel.setDebug("Health:", Color.BLACK);
+        healthLabel.picture.setForeground(Color.WHITE);
+        healthLabel.picture.setFont(Constants.BASE_FONT);
+        ui.add(healthLabel.picture);
+        playerHealthBar = new javax.swing.JProgressBar();
+        playerHealthBar.setBounds(185, 928, 300, 60);
+        playerHealthBar.setMaximum(Constants.BASE_PLAYER_HEALTH - 3 + manager.difficulty);
+        playerHealthBar.setForeground(Color.green);
+        playerHealthBar.setBackground(Color.RED);
+        playerHealthBar.setValue(player.health);
+        ui.add(playerHealthBar);
+        livesCounter = new Image(525, 925, 85, 30);
+        changeLives(0);
+        livesCounter.picture.setForeground(Color.WHITE);
+        livesCounter.picture.setFont(Constants.BASE_FONT);
+        ui.add(livesCounter.picture);
+        time = new Image(525, 960, 95, 30);
+        time.setDebug("Time: 00:00", Color.BLACK);
+        time.picture.setForeground(Color.WHITE);
+        time.picture.setFont(Constants.BASE_FONT);
+        ui.add(time.picture);
+        
         background = new Background(ui);
         ui.add(background.image.picture);
     }
 
+    /**
+     * changes lives by given amount and updates the user interface accordingly
+     * @param change the amount to change the number of lives by
+     */
+    public void changeLives(int change) {
+        lives+= change;
+        livesCounter.setDebug("Lives = " + lives, Color.BLACK);
+        livesCounter.picture.setFont(Constants.BASE_FONT);
+    }
+    
+    
     /**
      * gets the type of ship being spawned by chance
      * @return the type of ship thats being created
@@ -233,22 +279,19 @@ public class Engine {
      * @return the x coordinate "randomly" picked to spawn at
      */
     private int getXCoordinates() {
-        final int[] OPTIONS = {150, 300, 450, 600, 750, 900, 1050};
-        int random = Constants.random(1, OPTIONS.length);
-        return OPTIONS[random - 1];
+        final int[] OPTIONS = {150, 300, 450, 600, 750, 900, 1050, 1300, 1450};
+        return OPTIONS[Constants.random(1, OPTIONS.length) - 1];
     }
 
     /**
      * adds the Jlabel to the user interface and adds the background after so
      * that the background is always in the background
      * @param object the Jlabel to add
-     * @return if the Label was added or not
      */
-    public boolean add(JLabel object) {
-        if(object == null) return false;
+    public void add(JLabel object) {
+        if(object == null) System.out.println("Error adding Object");
         ui.add(object);
         ui.add(background.image.picture);
-        return true;
     }
     
     

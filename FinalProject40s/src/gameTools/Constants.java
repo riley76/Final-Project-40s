@@ -21,18 +21,23 @@ import javax.swing.JTextArea;
     
     public final static int BASE_SHIP_MOVEMENT = 2;
     public final static int BASE_LIVES         = 6;
-    public final static int BASE_PLAYER_HEALTH = 5;
-    public final static int BASE_SHIP_DAMAGE = 1;
-    public final static int BASE_ENEMY_HEALTH = 5;
+    public final static int BASE_PLAYER_HEALTH = 6;
+    public final static int BASE_SHIP_DAMAGE   = 1;
+    public final static int BASE_ENEMY_HEALTH  = 2;
     public final static int PLAYER_SHIP_NUMBER = -1;
-    public final static int ENEMY_SPAWN_Y = 75;
+    public final static int ENEMY_SPAWN_Y      = 75;
     
-    public final static int ENEMY_TYPE_GRUNT = 1;
-    public final static int ENEMY_TYPE_FAST = 2;
+    public final static int ENEMY_TYPE_GRUNT  = 1;
+    public final static int ENEMY_TYPE_FAST   = 2;
     public final static int ENEMY_TYPE_BULLKY = 3;
-    public final static int POINTS_TO_BOSS = 100; 
+    public final static int POINTS_TO_BOSS    = 100; 
+    
+    public final static int STARTING_DIRECTION_DELAY = 2250;
     
     public final static int NUMBER_OF_UPGRADES = 5;
+    
+    
+    public final static Font BASE_FONT = new Font("Tahoma", 1, 15);
     
     
     public static final int STOP_DIRECTION       = 0;
@@ -75,7 +80,8 @@ import javax.swing.JTextArea;
      */
     public static int randomDirection(int numberOFDirections) {
         if      (numberOFDirections == 2) return random(LEFT_DIRECTION ,RIGHT_DIRECTION );
-        else if (numberOFDirections == 4) return random(NORTH_WEST_DIRECTION ,NORTH_EAST_DIRECTION );
+        else if (numberOFDirections == 3) return random(SOUTH_DIRECTION ,EAST_DIRECTION );
+        else if (numberOFDirections == 4) return random(NORTH_DIRECTION ,EAST_DIRECTION );
         else if (numberOFDirections == 8) return random(NORTH_DIRECTION ,SOUTH_WEST_DIRECTION );
         else                              return random(NORTH_DIRECTION ,SOUTH_DIRECTION );
     } 
@@ -165,6 +171,17 @@ import javax.swing.JTextArea;
             output(thingToDo + "\n Must be Done,"
                     + " Codding for this is not done, finnish it", true);
         }
+    }
+    
+    /**
+     * used to check if there is an error
+     * @param worked if it worked (true) or nod (false)
+     * @param whatTriedToOccur what the method was trying to do, to display if it did not work 
+     */
+    public static void errorCheck(boolean worked, String whatTriedToOccur) {
+        if(worked) return;
+        output("There was an error while (" + whatTriedToOccur + ") has "
+                + "failed for some reason", false);
     }
     
     

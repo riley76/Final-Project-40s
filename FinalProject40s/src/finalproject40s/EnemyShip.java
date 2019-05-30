@@ -2,22 +2,44 @@ package finalproject40s;
 
 
 import gameTools.Constants;
-import gameTools.Coordinates;
 import gameTools.Image;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.Timer;
 
 public abstract class EnemyShip extends Ship {
 
     public static int totalNumber;
+    public static PlayerShip player;
+    public Timer directionTimer;
     
-    
-    public abstract Coordinates changeDirection(Coordinates coordinates);
+    public void changeDirection() {
+        int direction = Constants.randomDirection(3);
+        while(direction == coordinates.direction) {
+            direction = Constants.randomDirection(3);
+        }
+        coordinates.direction = direction;
+    } 
     
     public EnemyShip(Image image, int amount, Engine engine) {
         super(image, amount,engine);
         totalNumber++;
         shipNumber = totalNumber;
         firingDirection = Constants.SOUTH_DIRECTION;
+        coordinates.direction = firingDirection;
         speed = Constants.BASE_SHIP_MOVEMENT;
+        image.setDebug("", Color.green);
+        directionTimer = new Timer(Constants.STARTING_DIRECTION_DELAY, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                changeDirection();
+                if(coordinates.direction == Constants.SOUTH_DIRECTION) {
+                    directionTimer.setDelay(Constants.STARTING_DIRECTION_DELAY);
+                } else directionTimer.setDelay(650);
+            }
+        });
+        directionTimer.start();
     }
     
     /**
@@ -26,24 +48,43 @@ public abstract class EnemyShip extends Ship {
      * @return if the ship was removed or not
      */
     public boolean destroyed() {
+        if(!isAlive) return false;
         shutDown();
         return shipList.remove(this);
     }
     
     @Override
     public void hit(int damage) {
+        if(!isAlive) return; // to avoid false errors
         health-= damage;
         if(health <= 0) {
-            if(!destroyed()) System.out.println("Error in destroying ship");
+            Constants.errorCheck(destroyed(), "Ship destroyed in walls");
         }
     }
     
+    /**
+     * checks to see if this ship is colliding with any walls
+     */
+    @Override
+    public void checkWalls() {
+        for (int i = 0; i < engine.walls.length; i++) {
+            if(isColliding(engine.walls[i]) && isAlive) {
+                if(engine.walls[i].isEndWall) {
+                  engine.player.hit(3 - engine.manager.difficulty);
+                  Constants.errorCheck(destroyed(), "Ship destroyed in walls");
+                } else coordinates.bounceOff(engine.walls[i].coordinates);
+            }
+        }
+    }
+    
+    
+    
+    
     @Override
     public void action() {
-        move();
+        if(engine.isRunning) move();
         redraw();
         checkWalls();
-        checkPlayer();
     }
     
 }

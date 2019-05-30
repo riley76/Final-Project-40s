@@ -37,6 +37,9 @@ public class PropertiesManager {
      */
     public PropertiesManager() {
         play();
+        usingArrowKeys = true;
+        difficulty = 3;
+        adminMode = true;
     }
 
     /**
@@ -400,6 +403,7 @@ public class PropertiesManager {
      */
     public void loadGame(boolean tutorial) {
         GUEST_ACCOUNT.gamesPlayed++;
+        System.out.println("difficulty = " + difficulty);
         if(!accountLoggedIn.equals(GUEST_ACCOUNT)) accountLoggedIn.gamesPlayed++;
         ui.dispose();
         new Engine(this, tutorial);

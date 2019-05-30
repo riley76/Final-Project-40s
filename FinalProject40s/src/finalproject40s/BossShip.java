@@ -1,7 +1,6 @@
 package finalproject40s;
 
 
-import gameTools.Coordinates;
 import gameTools.Image;
 
 public class BossShip extends EnemyShip {
@@ -12,11 +11,6 @@ public class BossShip extends EnemyShip {
 
     @Override
     public void fire() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Coordinates changeDirection(Coordinates coordinates) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

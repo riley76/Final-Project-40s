@@ -2,7 +2,6 @@ package finalproject40s;
 
 
 import gameTools.Constants;
-import gameTools.Coordinates;
 import gameTools.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,7 +12,7 @@ public class BulkyShip extends EnemyShip {
     public BulkyShip(Image image, Engine engine, int difficulty) {
         super(image, Constants.BASE_SHIP_MOVEMENT /2,engine);
         canFire= true;
-        health = Constants.BASE_ENEMY_HEALTH * (5 - difficulty);
+        health = Constants.BASE_ENEMY_HEALTH + (5 - difficulty);
         if(difficulty <= 1)damageOutput = Constants.BASE_SHIP_DAMAGE * 4;
         else damageOutput = Constants.BASE_SHIP_DAMAGE * 2;
         firingTimer = new Timer((2 + difficulty) * 775, new ActionListener() {
@@ -22,11 +21,6 @@ public class BulkyShip extends EnemyShip {
                 fire();
             }
         });
-    }
-
-    @Override
-    public Coordinates changeDirection(Coordinates coordinates) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

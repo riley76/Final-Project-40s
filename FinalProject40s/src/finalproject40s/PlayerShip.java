@@ -27,11 +27,11 @@ public class PlayerShip extends Ship {
         super(image, amount, engine);
         firingDirection = Constants.NORTH_DIRECTION;
         damageOutput = Constants.BASE_SHIP_DAMAGE;
-        health = Constants.BASE_PLAYER_HEALTH;
+        health = Constants.BASE_PLAYER_HEALTH - 3 + engine.manager.difficulty;
         speed = Constants.BASE_SHIP_MOVEMENT;
         shipNumber = Constants.PLAYER_SHIP_NUMBER;
         canFire = true;
-        
+        this.image.picture.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/startingPlayerShip.png")));
         invincible = false;
         upgrades = new int[3];
         firingTimer = new Timer(1100, new ActionListener() {
@@ -69,8 +69,9 @@ public class PlayerShip extends Ship {
                }
             }
         });
-        startingCoordinates = coordinates;
-        Ship.player = this;
+        startingCoordinates = new Coordinates(image);
+        startingCoordinates.changeCoordinates(coordinates);
+        EnemyShip.player = this;
     }
 
 
@@ -190,10 +191,11 @@ public class PlayerShip extends Ship {
     @Override
     public void hit(int damage) {
         health-= damage;
-        if(health <0) {
+        engine.playerHealthBar.setValue(health);
+        if(health <= 0) {
             hide();
+            engine.changeLives(-1);
             Constants.output("You Died!! \nYou have " + engine.lives + " Lives left", true);
-            engine.lives--;
             if(engine.lives <= 0) engine.exit(Constants.LOST_GAME);
             coordinates.changeCoordinates(startingCoordinates);
             damageOutput = Constants.BASE_SHIP_DAMAGE;
@@ -203,6 +205,7 @@ public class PlayerShip extends Ship {
             redraw();
             show();
         }
+        engine.playerHealthBar.setValue(health);
     }
     
     @Override
@@ -219,11 +222,15 @@ public class PlayerShip extends Ship {
      */
     private void adminControls(KeyEvent evt) {
         if (evt.getKeyCode() == KeyEvent.VK_1) {
-            
+            hit(1);
         } else if (evt.getKeyCode() == KeyEvent.VK_2) {
-            
+            engine.spawnShip();
+            shipList.get(shipList.getLength() - 1).redraw();
         }else if (evt.getKeyCode() == KeyEvent.VK_3) {
-            
+            Constants.output("X = " + coordinates.x + ", y = " + coordinates.y + ","
+                    + " direction = " + coordinates.direction + ", health = " 
+                    + health + ", damage = " + damageOutput + ", invincible = " 
+                    + invincible, false);
         } else if (evt.getKeyCode() == KeyEvent.VK_4) {
             
         } else if (evt.getKeyCode() == KeyEvent.VK_5) {

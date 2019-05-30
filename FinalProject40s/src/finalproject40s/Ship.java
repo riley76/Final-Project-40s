@@ -18,7 +18,6 @@ public abstract class Ship extends GameCharacter{
     public boolean canFire;
     public int firingDirection;
     public static LinkedList<Ship> shipList = new LinkedList<>();
-    public static PlayerShip player;
 
     public Ship(Image hitbox, int amount, Engine engine) {
         super(hitbox, amount, 10);
@@ -31,7 +30,7 @@ public abstract class Ship extends GameCharacter{
      * fires this ships weapon and starts firing delay timer
      */
     public void fire() {
-       if(canFire) {
+       if(canFire && isAlive) {
            engine.spawnBullet(this);
            firingTimer.start();
            canFire = false;
@@ -50,9 +49,10 @@ public abstract class Ship extends GameCharacter{
     public void checkWalls() {
         for (int i = 0; i < engine.walls.length; i++) {
             if(isColliding(engine.walls[i]) && isAlive) {
-                if(engine.walls[i].isEndWall && shipNumber != Constants.PLAYER_SHIP_NUMBER)
-                    engine.exit(Constants.LOST_GAME);
-                else coordinates.stickTo(engine.walls[i].coordinates);
+                if(engine.walls[i].isEndWall && shipNumber != Constants.PLAYER_SHIP_NUMBER) {
+                  engine.player.hit(3 - engine.manager.difficulty);
+                  shutDown();
+                } else coordinates.stickTo(engine.walls[i].coordinates);
             }
         }
     }
@@ -65,13 +65,10 @@ public abstract class Ship extends GameCharacter{
             if(isColliding(shipList.get(i)) && shipList.get(i).shipNumber != 
                     shipNumber && isAlive) {
                 hit(shipList.get(i).damageOutput * 2);
+                shipList.get(i).hit(damageOutput * 2);
                 return;
             }
         }
-    }
-    
-    public boolean checkPlayer() {
-        return isColliding(player);
     }
     
     

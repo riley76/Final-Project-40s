@@ -396,7 +396,6 @@ import java.lang.reflect.Array;
      
      
     public T[] toArray(T[] array) {
-        
         array = (T[]) (Array.newInstance(array.getClass().getComponentType(), length));
         for (int i = 0; i < length; i++) {
             array[i] = get(i);

@@ -3,7 +3,6 @@ package finalproject40s;
 
 import gameTools.Constants;
 import gameTools.Image;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Timer;
@@ -28,8 +27,6 @@ public abstract class EnemyShip extends Ship {
         shipNumber = totalNumber;
         firingDirection = Constants.SOUTH_DIRECTION;
         coordinates.direction = firingDirection;
-        speed = Constants.BASE_SHIP_MOVEMENT;
-        image.setDebug("", Color.green);
         directionTimer = new Timer(Constants.STARTING_DIRECTION_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -49,6 +46,7 @@ public abstract class EnemyShip extends Ship {
      */
     public boolean destroyed() {
         if(!isAlive) return false;
+        engine.addPoint(this);
         shutDown();
         return shipList.remove(this);
     }
@@ -70,11 +68,23 @@ public abstract class EnemyShip extends Ship {
         for (int i = 0; i < engine.walls.length; i++) {
             if(isColliding(engine.walls[i]) && isAlive) {
                 if(engine.walls[i].isEndWall) {
-                  engine.player.hit(3 - engine.manager.difficulty);
+                  engine.player.hit(4 - engine.manager.difficulty);
                   Constants.errorCheck(destroyed(), "Ship destroyed in walls");
                 } else coordinates.bounceOff(engine.walls[i].coordinates);
             }
         }
+    }
+    
+    
+    /**
+     * fires this ships weapon and starts firing delay timer
+     */
+    @Override
+    public void fire() {
+       if(isAlive) {
+           engine.spawnBullet(this);
+           firingTimer.start();
+       }
     }
     
     

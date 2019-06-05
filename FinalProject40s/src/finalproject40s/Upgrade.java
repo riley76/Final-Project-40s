@@ -13,36 +13,33 @@ import java.awt.Color;
  */
 public class Upgrade extends GameCharacter{
     
-    PlayerShip player;
+    Engine engine;
     public int upgradeType;
     public static final int LIFE     = 5;
     public static final int FIRING   = 1;
     public static final int STRENGTH = 3;
-    public static final int MISSILE  = 4;
+    public static final int DAMAGE   = 4;
     public static final int SPEED    = 2;
+    public static final Color[] SHIP_COLOURS = {Color.magenta, Color.cyan, 
+        Color.green, Color.orange, Color.yellow};
+    public static final String[] NAMES = {"Firing", "Strength", "Speed", "Invincible", "Life"};
     
     
     
     /**
      * default constructor for this class
      * @param image the image of the upgrade
-     * @param player the user playing the game
+     * @param engine the engine that runs general logic for the game
      * @param upgradeType the type of upgrade this is
      */
-    public Upgrade(Image image, PlayerShip player, int upgradeType) {
+    public Upgrade(Image image, Engine engine, int upgradeType) {
         super(image, 10, 1);
-        this.player = player;
+        this.engine = engine;
         this.upgradeType = upgradeType;
-        if(upgradeType == LIFE) {
-            image.setDebug("Life", Color.yellow);
-        } else if(upgradeType == FIRING) {
-            image.setDebug("Firing", Color.magenta);
-        } else if(upgradeType == STRENGTH) {
-            image.setDebug("Strong", Color.green);
-        } else if(upgradeType == MISSILE) {
-            image.setDebug("Missile", Color.orange);
+        if(upgradeType == STRENGTH) {
+            image.setDebug("Strong", SHIP_COLOURS[upgradeType - 1]);
         } else {
-            image.setDebug("Speed", Color.cyan);
+            image.setDebug(NAMES[upgradeType], SHIP_COLOURS[upgradeType - 1]);
         }
     }
 
@@ -55,9 +52,9 @@ public class Upgrade extends GameCharacter{
      * checks to see if colliding with the player
      */
     private void checkPlayer() {
-        if(isColliding(player)) {
-            if(upgradeType == LIFE) player.getLife();
-            else player.pickUpUpgrade(upgradeType);
+        if(isColliding(engine.player)) {
+            if(upgradeType == LIFE) engine.changeLives(1);
+            else engine.player.pickUpUpgrade(upgradeType);
             shutDown();
         }
     }

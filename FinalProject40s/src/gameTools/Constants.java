@@ -20,24 +20,31 @@ import javax.swing.JTextArea;
     public final static int EXITED_GAME        = 3;
     
     public final static int BASE_SHIP_MOVEMENT = 2;
-    public final static int BASE_LIVES         = 6;
+    public final static int BASE_LIVES         = 3;
     public final static int BASE_PLAYER_HEALTH = 6;
     public final static int BASE_SHIP_DAMAGE   = 1;
+    public final static int BASE_SHIP_SIZE     = 30;
+    public final static int BASE_BULLET_SIZE   = 5;
+    public final static int BASE_UPGRADE_SIZE  = 20;
     public final static int BASE_ENEMY_HEALTH  = 2;
     public final static int PLAYER_SHIP_NUMBER = -1;
-    public final static int ENEMY_SPAWN_Y      = 75;
+    public final static int ENEMY_SPAWN_Y      = 65;
     
     public final static int ENEMY_TYPE_GRUNT  = 1;
     public final static int ENEMY_TYPE_FAST   = 2;
     public final static int ENEMY_TYPE_BULLKY = 3;
-    public final static int POINTS_TO_BOSS    = 100; 
+    public final static int POINTS_TO_BOSS    = 50; 
     
-    public final static int STARTING_DIRECTION_DELAY = 2250;
+    public final static int STARTING_DIRECTION_DELAY = 1950;
     
     public final static int NUMBER_OF_UPGRADES = 5;
+    public final static int NUMBER_OF_UPGRADE_SLOTS = 3;
+    public final static int ONE_SECOND = 1000;
+    public final static int UPGRADE_COUNT = 12;
+    public final static int PLAYER_FIRING_DELAY = 1100;
     
     
-    public final static Font BASE_FONT = new Font("Tahoma", 1, 15);
+    public final static Font BASE_FONT = new Font("Tahoma", 1, 14);
     
     
     public static final int STOP_DIRECTION       = 0;
@@ -99,6 +106,20 @@ import javax.swing.JTextArea;
         double number = (H - L + 1d) * seed + L;
         return (int)number;
     }
+    
+    /**
+     * generates a "random" number from 1 to 100
+     * @return the "random" number
+     */
+    public static int getPercentage() {
+        double seed = Math.random();
+        double L = 1;
+        double H = 100;
+        double number = (H - L + 1d) * seed + L;
+        return (int)number;
+    }
+    
+    
     
    /**
      * Displays a message to the user through a message box or through System.out
@@ -182,6 +203,16 @@ import javax.swing.JTextArea;
         if(worked) return;
         output("There was an error while (" + whatTriedToOccur + ") has "
                 + "failed for some reason", false);
+    }
+    
+    /**
+     * tells if an integer is even or odd
+     * @param input the number that the method decides is even or odd
+     * @return if input is even
+     */
+    public static boolean isEven(int input) {
+        if ((input %2) == 0 ) return true; 
+        else return false;
     }
     
     

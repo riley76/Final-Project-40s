@@ -1,7 +1,6 @@
 
 package finalproject40s;
 
-import gameTools.Coordinates;
 import gameTools.GameObject;
 import gameTools.Image;
 

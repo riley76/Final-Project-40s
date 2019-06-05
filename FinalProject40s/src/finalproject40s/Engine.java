@@ -39,7 +39,9 @@ public class Engine {
     javax.swing.JProgressBar playerHealthBar;
     Image livesCounter;
     Image time;
-    
+    Image pointsCounter;
+    Image[] upgradeSlots;
+    Image[] upgradeTimers;
     
     
 
@@ -102,9 +104,12 @@ public class Engine {
      */
     public void addPoint(Ship ship) {
         points++;
+        pointsCounter.setDebug("Points: " + points, Color.BLACK);
+        pointsCounter.picture.setFont(Constants.BASE_FONT);
         manager.addPoint();
+        int upgradeSpawn = Constants.getPercentage();
+        if(upgradeSpawn <= (10 + (18 * manager.difficulty))) spawnUpgrade(ship);
         if(points == Constants.POINTS_TO_BOSS && !manager.neverEnding) spawnBoss();
-        Constants.output("Add the change in life display code here", true);
     }
 
     /**
@@ -117,9 +122,6 @@ public class Engine {
     public void exit(int exitType) {
         ui.dispose();
         isRunning = false;
-        for (int i = 0; i < Ship.shipList.getLength(); i++) {
-            Ship.shipList.get(i).shutDown();
-        }
         manager.GUEST_ACCOUNT.pointsInLastGame = points;
         if (!manager.GUEST_ACCOUNT.equals(manager.accountLoggedIn)) {
             manager.accountLoggedIn.pointsInLastGame = points;
@@ -148,15 +150,18 @@ public class Engine {
         int shipType = getShipType();
         if(shipType == Constants.ENEMY_TYPE_GRUNT) {
             GruntShip ship = new GruntShip(new Image(getXCoordinates(),
-                    Constants.ENEMY_SPAWN_Y, 25, 25), this, manager.difficulty);
+                    Constants.ENEMY_SPAWN_Y, Constants.BASE_SHIP_SIZE,
+                    Constants.BASE_SHIP_SIZE), this, manager.difficulty);
             add(ship.image.picture);
         } else if(shipType == Constants.ENEMY_TYPE_BULLKY) {
             BulkyShip ship = new BulkyShip(new Image(getXCoordinates(),
-                    Constants.ENEMY_SPAWN_Y, 35, 35),this, manager.difficulty);
+                    Constants.ENEMY_SPAWN_Y, (int)(Constants.BASE_SHIP_SIZE * 1.5),
+                    (int)(Constants.BASE_SHIP_SIZE * 1.5)),this, manager.difficulty);
             add(ship.image.picture);
         } else if(shipType == Constants.ENEMY_TYPE_FAST) {
             SpeedyShip ship = new SpeedyShip(new Image(getXCoordinates(),
-                    Constants.ENEMY_SPAWN_Y, 25, 25), this, manager.difficulty);
+                    Constants.ENEMY_SPAWN_Y, Constants.BASE_SHIP_SIZE, 
+                    Constants.BASE_SHIP_SIZE), this, manager.difficulty);
             add(ship.image.picture);
         } else {
             System.out.println("Error in ship typing ");
@@ -173,7 +178,7 @@ public class Engine {
             return false;
         }
         Bullet bullet = new Bullet(new Image(ship.coordinates.x, ship.coordinates.y,
-                6, 6),
+                Constants.BASE_BULLET_SIZE, Constants.BASE_BULLET_SIZE),
                 ship.speed * 3, 10, ship, this);
         add(bullet.image.picture);
         return true;
@@ -184,7 +189,6 @@ public class Engine {
      * user
      */
     private void buildPresetImages() {
-        
         Image[] wallImages = {new Image(0, 0, 10, 905), new Image(0, 0, 1700, 10),
             new Image(1635, 0, 10, 905)};
         walls = new Wall[wallImages.length + 1];
@@ -194,7 +198,7 @@ public class Engine {
         }
         walls[wallImages.length] = new Wall(new Image(0, 905, 1700, 15), true);
         ui.add(walls[wallImages.length].image.picture);
-        player = new PlayerShip(new Image(800, 750, 25, 45), Constants.BASE_SHIP_MOVEMENT, this);
+        player = new PlayerShip(new Image(800, 750, 25, 45), this);
         ui.add(player.image.picture);
         closeButton = new javax.swing.JButton();
         closeButton.setBounds(1, 920, 100, 75);
@@ -240,7 +244,28 @@ public class Engine {
         time.picture.setForeground(Color.WHITE);
         time.picture.setFont(Constants.BASE_FONT);
         ui.add(time.picture);
-        
+        pointsCounter = new Image(630, 960, 80, 30);
+        pointsCounter.setDebug("Points: 0", Color.BLACK);
+        pointsCounter.picture.setForeground(Color.WHITE);
+        pointsCounter.picture.setFont(Constants.BASE_FONT);
+        ui.add(pointsCounter.picture);
+        upgradeSlots = new Image[Constants.NUMBER_OF_UPGRADE_SLOTS];
+        for (int i = 0; i < upgradeSlots.length; i++) {
+            upgradeSlots[i] = new Image(725 +(95 * i), 925, 75, 65);
+            upgradeSlots[i].setDebug("Slot " + (i + 1) + ": Empty", Color.BLUE);
+            ui.add(upgradeSlots[i].picture);
+            time.picture.setForeground(Color.WHITE);
+        }
+        upgradeTimers = new Image[Constants.NUMBER_OF_UPGRADES - 1];
+        for (int i = 0; i < upgradeTimers.length; i++) {
+            if(Constants.isEven(i)) upgradeTimers[i] = new Image(1025 + (i * 70), 930, 135, 30);
+            else upgradeTimers[i] = new Image(1025 + ((i - 1) * 70), 965, 135, 30);
+            upgradeTimers[i].setDebug(Upgrade.NAMES[i] + " Time: 10", Color.BLACK);
+            upgradeTimers[i].picture.setForeground(Color.WHITE);
+            upgradeTimers[i].picture.setFont(Constants.BASE_FONT);
+//            upgradeTimers[i].hide();
+            ui.add(upgradeTimers[i].picture);
+        }
         background = new Background(ui);
         ui.add(background.image.picture);
     }
@@ -261,16 +286,12 @@ public class Engine {
      * @return the type of ship thats being created
      */
     private int getShipType() {
-        return Constants.ENEMY_TYPE_GRUNT;
-        
-//        int random = Constants.random(1, 100);
-//        int gruntChance = 35 + (12 * manager.difficulty);
-//        System.out.println("chnage " + gruntChance);
-//        int bullkyChance = gruntChance + (5 * 12 * manager.difficulty);
-//         System.out.println("bulk chance " + bullkyChance);
-//        if(random <= gruntChance) return Constants.ENEMY_TYPE_GRUNT;
-//        else if (random <= bullkyChance) return Constants.ENEMY_TYPE_BULLKY;
-//        else return Constants.ENEMY_TYPE_FAST;
+        int random = Constants.getPercentage();
+        int gruntChance = 30 + (7 * manager.difficulty);
+        int fastChance = gruntChance + 20 +(5 * manager.difficulty);
+        if(random > fastChance) return Constants.ENEMY_TYPE_BULLKY;
+        else if (random >= gruntChance) return Constants.ENEMY_TYPE_FAST;
+        else return Constants.ENEMY_TYPE_GRUNT;
     }
 
     
@@ -284,8 +305,8 @@ public class Engine {
     }
 
     /**
-     * adds the Jlabel to the user interface and adds the background after so
-     * that the background is always in the background
+     * adds the Jlabel to the user interface and adds the "background" after so
+     * that the "background" is always in the background
      * @param object the Jlabel to add
      */
     public void add(JLabel object) {
@@ -303,4 +324,45 @@ public class Engine {
         
     }
 
+    /**
+     * creates an upgrade where the ship is
+     * @param ship the ship the upgrade is coming from
+     */
+    private void spawnUpgrade(Ship ship) {
+        int upgradeType = Constants.random(1, Constants.NUMBER_OF_UPGRADES);
+        Upgrade upgrade = new Upgrade(new Image(ship.coordinates.x, 
+                ship.coordinates.y, Constants.BASE_UPGRADE_SIZE, 
+                Constants.BASE_UPGRADE_SIZE), this, upgradeType);
+        add(upgrade.image.picture);
+    }
+
+    /**
+     * changes the upgrade images to reflect what they are set to
+     */
+    public void updateUpgradeImages() {
+        for (int i = 0; i < upgradeSlots.length; i++) {
+            if(player.upgrades[i] <= 0) upgradeSlots[i].setDebug("Slot " + (i + 1)
+                    + ": Empty", Color.BLUE);
+            else upgradeSlots[i].setDebug(Upgrade.NAMES[player.upgrades[i] - 1], 
+                    Upgrade.SHIP_COLOURS[player.upgrades[i] - 1]);
+        }
+    }
+    
+    /**
+     * changes the time display of how long the upgrade will last for 
+     * @param upgrade the upgrade time display being changed
+     * @param timeLeft the time left before the timer reaches the end
+     */
+    public void changeUpgradeCount(int upgrade, int timeLeft) {
+        if(upgrade >= upgradeTimers.length || timeLeft < 0)  {
+            System.out.println("error in upgrade time Left code with " + timeLeft
+                    + " Time Left");
+            return;
+        }
+        if(timeLeft == 0) upgradeTimers[upgrade].hide();
+        else upgradeTimers[upgrade].show();
+        upgradeTimers[upgrade].setDebug(Upgrade.NAMES[upgrade] + " Time: 10", Color.BLACK);
+        upgradeTimers[upgrade].picture.setFont(Constants.BASE_FONT);
+    }
+    
 }

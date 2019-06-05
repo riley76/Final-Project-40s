@@ -11,62 +11,93 @@ import javax.swing.Timer;
 
 public class PlayerShip extends Ship {
 
-    private int[] upgrades;
-    private int invincibleCount;
+    public int[] upgrades;
     private Timer[] upgradeTimers;
+    private int[] upgradeCount;
     public boolean invincible;
     private final Coordinates startingCoordinates;
 
     /**
      * constructor for the player ship
      * @param image the image to display to the user to visualize this ship
-     * @param amount the amount to move by
      * @param engine the engine that runs the general logic of the game
      */
-    public PlayerShip(Image image, int amount, Engine engine) {
-        super(image, amount, engine);
+    public PlayerShip(Image image, Engine engine) {
+        super(image, Constants.BASE_SHIP_MOVEMENT * 2, engine);
         firingDirection = Constants.NORTH_DIRECTION;
         damageOutput = Constants.BASE_SHIP_DAMAGE;
         health = Constants.BASE_PLAYER_HEALTH - 3 + engine.manager.difficulty;
-        speed = Constants.BASE_SHIP_MOVEMENT;
+        speed = Constants.BASE_SHIP_MOVEMENT * 2;
         shipNumber = Constants.PLAYER_SHIP_NUMBER;
         canFire = true;
-        this.image.picture.setIcon(new javax.swing.ImageIcon(getClass().getResource("/media/startingPlayerShip.png")));
+        this.image.picture.setIcon(new javax.swing.ImageIcon(getClass().getResource
+        ("/media/startingPlayerShip.png")));
         invincible = false;
         upgrades = new int[3];
-        firingTimer = new Timer(1100, new ActionListener() {
+        firingTimer = new Timer(Constants.PLAYER_FIRING_DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 canFire = true;
                 firingTimer.stop();
             }
         });
-        upgradeTimers = new Timer[Constants.NUMBER_OF_UPGRADES - 2];
-        upgradeTimers[Upgrade.FIRING - 1] = new Timer(10000, new ActionListener() {
+        upgradeTimers = new Timer[Constants.NUMBER_OF_UPGRADES - 1];
+        upgradeCount = new int[Constants.NUMBER_OF_UPGRADES - 1];
+        upgradeCount[Upgrade.FIRING - 1] = Constants.UPGRADE_COUNT;
+        upgradeTimers[Upgrade.FIRING - 1] = new Timer(Constants.ONE_SECOND,
+                new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                upgradeTimers[0].stop();
-                firingTimer.setInitialDelay(1100);
+                upgradeCount[Upgrade.FIRING - 1]--;
+                engine.changeUpgradeCount(Upgrade.FIRING, upgradeCount[Upgrade.FIRING -1]);
+                if (upgradeCount[Upgrade.FIRING - 1] <= 0) {
+                    upgradeTimers[Upgrade.FIRING - 1].stop();
+                    firingTimer.setInitialDelay(Constants.PLAYER_FIRING_DELAY);
+                    upgradeCount[Upgrade.FIRING - 1] = Constants.UPGRADE_COUNT;
+                }
             }
         });
-        upgradeTimers[Upgrade.SPEED - 1] = new Timer(10000, new ActionListener() {
+        upgradeCount[Upgrade.SPEED - 1] = Constants.UPGRADE_COUNT;
+        upgradeTimers[Upgrade.SPEED - 1] = new Timer(Constants.ONE_SECOND,
+                new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                upgradeTimers[1].stop();
-                coordinates.amount = Constants.BASE_SHIP_MOVEMENT;
+                upgradeCount[Upgrade.SPEED - 1]--;
+                engine.changeUpgradeCount(Upgrade.SPEED, upgradeCount[Upgrade.SPEED - 1]);
+                if (upgradeCount[Upgrade.SPEED - 1] <= 0) {
+                    upgradeTimers[Upgrade.SPEED - 1].stop();
+                    coordinates.amount = Constants.BASE_SHIP_MOVEMENT;
+                    upgradeCount[Upgrade.SPEED - 1] = Constants.UPGRADE_COUNT;
+                }
             }
         });
-        invincibleCount = 17;
-        upgradeTimers[Upgrade.STRENGTH - 1] = new Timer(10000, new ActionListener() {
+        upgradeCount[Upgrade.STRENGTH - 1] = Constants.UPGRADE_COUNT;
+        upgradeTimers[Upgrade.STRENGTH - 1] = new Timer(Constants.ONE_SECOND, 
+                new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                invincibleCount--;
-                Constants.output("Change progress bar for invincible code here", true);
-                if (invincibleCount <= 0) {
+                upgradeCount[Upgrade.STRENGTH - 1]--;
+                engine.changeUpgradeCount(Upgrade.STRENGTH, upgradeCount[Upgrade.STRENGTH -1]);
+                if (upgradeCount[Upgrade.STRENGTH - 1] <= 0) {
                     invincible = false;
-                    upgradeTimers[1].stop();
-                    Constants.output("Change progress bar for invincible display code here", true);
+                    upgradeTimers[Upgrade.STRENGTH - 1].stop();
+                    upgradeCount[Upgrade.STRENGTH - 1] = Constants.UPGRADE_COUNT;
+                    Constants.output("Change progress bar for invincible display"
+                            + " code here", true);
                }
+            }
+        });
+        upgradeCount[Upgrade.DAMAGE - 1] = Constants.UPGRADE_COUNT;
+        upgradeTimers[Upgrade.DAMAGE - 1] = new Timer(Constants.ONE_SECOND, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                upgradeCount[Upgrade.DAMAGE - 1]--;
+                engine.changeUpgradeCount(Upgrade.DAMAGE, upgradeCount[Upgrade.DAMAGE -1]);
+                if (upgradeCount[Upgrade.DAMAGE - 1] <= 0) {
+                    damageOutput = Constants.BASE_SHIP_DAMAGE;
+                    upgradeTimers[Upgrade.DAMAGE - 1].stop();
+                    upgradeCount[Upgrade.DAMAGE - 1] = Constants.UPGRADE_COUNT;
+                }
             }
         });
         startingCoordinates = new Coordinates(image);
@@ -91,7 +122,7 @@ public class PlayerShip extends Ship {
             upgrades[1] = upgrades[2];
             upgrades[2] = newUpgradeType;
         }
-        updateUpgradeImages();
+        engine.updateUpgradeImages();
     }
 
     /**
@@ -100,15 +131,16 @@ public class PlayerShip extends Ship {
     public void useUpgrade() {
         if(upgrades[0] == 0) return;
         if(upgrades[0] == Upgrade.FIRING) {
-            firingTimer.setInitialDelay(50);
+            firingTimer.setInitialDelay(75);
             upgradeTimers[Upgrade.FIRING - 1].start();
         } else if(upgrades[0] == Upgrade.STRENGTH) {
             invincible = true;
             Constants.output("Put change ship colour code here", true);
-            invincibleCount = 17;
+            upgradeCount[Upgrade.STRENGTH - 1] = Constants.UPGRADE_COUNT;
             upgradeTimers[Upgrade.STRENGTH - 1].start();
-        } else if(upgrades[0] == Upgrade.MISSILE) {
-            fireMissile();
+        } else if(upgrades[0] == Upgrade.DAMAGE) {
+            upgradeTimers[Upgrade.DAMAGE - 1].start();
+            damageOutput = Constants.BASE_SHIP_DAMAGE * 2;
         } else if(upgrades[0] == Upgrade.SPEED) {
             coordinates.amount = Constants.BASE_SHIP_MOVEMENT * 3;
             upgradeTimers[Upgrade.SPEED - 1].start();
@@ -116,7 +148,7 @@ public class PlayerShip extends Ship {
         upgrades[0] = upgrades[1];
         upgrades[1] = upgrades[2];
         upgrades[2] = 0;
-        updateUpgradeImages();
+        engine.updateUpgradeImages();
     }
 
 
@@ -232,30 +264,10 @@ public class PlayerShip extends Ship {
                     + health + ", damage = " + damageOutput + ", invincible = " 
                     + invincible, false);
         } else if (evt.getKeyCode() == KeyEvent.VK_4) {
-            
+            pickUpUpgrade(Constants.random(1, Constants.NUMBER_OF_UPGRADES - 1));
         } else if (evt.getKeyCode() == KeyEvent.VK_5) {
             
         }
     }
-
-    
-    /**
-     * increases the amount of lives the player has by one
-     */
-    public void getLife() {
-            engine.lives++;
-    }
-
-    /**
-     * updates the upgrade display so it is in line with the upgrades the user has
-     */
-    private void updateUpgradeImages() {
-        Constants.output("Put update upgrade slot images code here", true);
-    }
-
-    private void fireMissile() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
     
 }

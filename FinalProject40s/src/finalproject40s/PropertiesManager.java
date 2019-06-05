@@ -6,6 +6,7 @@ import gameTools.Constants;
 import static gameTools.Constants.missingWork;
 import static gameTools.Constants.options;
 import static gameTools.Constants.output;
+import gameTools.FileHandler;
 import java.awt.Color;
 import javax.swing.JOptionPane;
 
@@ -222,7 +223,8 @@ public class PropertiesManager {
                 curentDifficulty = DIFFICULTY_OPTIONS[2];
             }
             String input = options("What Difficulty Do you want to Play? "
-                    + "You are Currently Playing at " + curentDifficulty + " difficulty", DIFFICULTY_OPTIONS);
+                    + "You are Currently Playing at " + curentDifficulty +
+                    " difficulty", DIFFICULTY_OPTIONS);
             if (input.equalsIgnoreCase(DIFFICULTY_OPTIONS[2])) {
                 difficulty = 1;
             } else if (input.equalsIgnoreCase(DIFFICULTY_OPTIONS[1])) {
@@ -232,15 +234,16 @@ public class PropertiesManager {
             }
         } else if (currentMenu.equalsIgnoreCase(MENUS[3])) {
             if (accountLoggedIn.name.equalsIgnoreCase("Guest Stats")) {
-                String input = options("What account do you want", GameAccount.accountNamesList);
-                if (input.equalsIgnoreCase(GameAccount.accountNamesList[0])) {
+                String input = options("What account do you want", 
+                        GameAccount.accountNamesList.toArray(new String[GameAccount.accountNamesList.getLength()]));
+                if (input.equalsIgnoreCase(GameAccount.accountNamesList.get(0))) {
                     toggleLoggedAccount(new GameAccount());
                     ui.button5.setText("Sign out of Account");
                 } else {
-                    for (int i = 1; i < GameAccount.accountNamesList.length; i++) {
-                        if (GameAccount.accountNamesList[i].equalsIgnoreCase(input)) {
-                            if (GameAccount.allAccounts[i - 1].signIn()) {
-                                toggleLoggedAccount(GameAccount.allAccounts[i - 1]);
+                    for (int i = 1; i < GameAccount.accountNamesList.getLength(); i++) {
+                        if (GameAccount.accountNamesList.get(i).equalsIgnoreCase(input)) {
+                            if (GameAccount.allAccounts.get(i - 1).signIn()) {
+                                toggleLoggedAccount(GameAccount.allAccounts.get(i - 1));
                                 ui.button5.setText("Sign out of Account");
                             } else {
                                 output("Incorrect password", true);
@@ -281,11 +284,12 @@ public class PropertiesManager {
                 output("No Accounts to view!", true);
                 return;
             }
+            FileHandler fileHandler = new FileHandler("Accounts");
             String input = options("What Account do You Want To View?",
-                    GameAccount.accountNamesList);
-            for (int i = 1; i < GameAccount.allAccounts.length + 1; i++) {
-                if (input.equalsIgnoreCase(GameAccount.accountNamesList[i])) {
-                    GameAccount.allAccounts[i - 1].displayStatistics();
+                    GameAccount.accountNamesList.toArray(new String[GameAccount.accountNamesList.getLength()]));
+            for (int i = 1; i < GameAccount.allAccounts.getLength() + 1; i++) {
+                if (input.equalsIgnoreCase(GameAccount.accountNamesList.get(i))) {
+                    GameAccount.allAccounts.get(i).displayStatistics();
                 }
             }
         }
@@ -324,21 +328,23 @@ public class PropertiesManager {
      * displays the top players and their score to the user
      */
     private void displayLeaderboards() {
-        if (GameAccount.allAccounts.length == 0) {
+        if (GameAccount.allAccounts.getLength() == 0) {
             output("No Accounts Have Been Created!", true);
             return;
         }
         GameAccount leaderBoards[];
-        if (GameAccount.allAccounts.length >= MAX_LEADERBOARDS) {
+        if (GameAccount.allAccounts.getLength() >= MAX_LEADERBOARDS) {
             leaderBoards = new GameAccount[MAX_LEADERBOARDS];
         } else {
-            leaderBoards = new GameAccount[GameAccount.allAccounts.length];
+            leaderBoards = new GameAccount[GameAccount.allAccounts.getLength()];
         }
-        for (int i = 0; i < GameAccount.allAccounts.length; i++) {
+        for (int i = 0; i < GameAccount.allAccounts.getLength(); i++) {
             int spot = spotWorks(leaderBoards.length - 
-                    getSpot(allAccounts, 0, GameAccount.allAccounts[i].totalPoints, leaderBoards.length)
-                    , leaderBoards);
-            if(spot < MAX_LEADERBOARDS) leaderBoards[spot] = GameAccount.allAccounts[i];
+                    getSpot(allAccounts.toArray(new 
+                            GameAccount[allAccounts.getLength()]), 0, 
+                            GameAccount.allAccounts.get(i).totalPoints,
+                            leaderBoards.length), leaderBoards);
+            if(spot < MAX_LEADERBOARDS) leaderBoards[spot] = GameAccount.allAccounts.get(i);
         }
         String text = "Best Players of All Time in Space Monster Shoot Em Up!!! \n";
         for (int i = 0; i < leaderBoards.length; i++) {

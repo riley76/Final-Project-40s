@@ -2,6 +2,7 @@
 package finalproject40s;
 
 import gameTools.Constants;
+import gameTools.LinkedList;
 
 /**
  * GameAccount.java - 
@@ -17,8 +18,8 @@ import gameTools.Constants;
     public int pointsInLastGame;
     public int totalLivesLost;
     public int gamesPlayed;
-    static public String accountNamesList[] = {"Create New Account"};
-    static public GameAccount allAccounts[] = new GameAccount[0];
+    static public LinkedList<String> accountNamesList = new LinkedList<>();
+    static public LinkedList<GameAccount> allAccounts = new LinkedList<>();
     static final public int MAX_CHARACTER = 30;
     static final public int MIN_CHARACTER = 5;
      
@@ -44,8 +45,8 @@ import gameTools.Constants;
         pointsInLastGame = 0;
         totalLivesLost = 0;
         gamesPlayed = 0;
-        accountNamesList = addToArray(accountNamesList, name);
-        allAccounts = addToArray(allAccounts, this);
+        accountNamesList.add(name);
+        allAccounts.add(this);
         PropertiesManager.accountsCreated = true;
         if(PropertiesManager.adminMode) {
             totalPoints = Constants.getInteger("What points should account " + name + " Have?");
@@ -69,6 +70,7 @@ import gameTools.Constants;
     /**
      * Creates a placeholder account when no one is signed in
      * @param name used to signal that this is a Blank Account 
+     * @param points the points they have
      */
     public GameAccount(String name, int points) {
         this.name = name;
@@ -109,33 +111,6 @@ import gameTools.Constants;
                 + "\nPoints Earned in the Last Game this account played "
                         + "= " + pointsInLastGame, true);
     }
-    
-    
-
-    /**
-     * 
-     * @param array
-     * @param newPart
-     * @return 
-     */
-    public static String[] addToArray(String[] array, String newPart) {
-        String[] newArray = new String[array.length + 1];
-        for (int i = 0; i < array.length; i++) {
-            newArray[i] = array[i];
-        }
-        newArray[newArray.length - 1] = newPart;
-        return newArray;
-    }
-
-    public static GameAccount[] addToArray(GameAccount[] array, GameAccount newPart) {
-        GameAccount[] newArray = new GameAccount[array.length + 1];
-        for (int i = 0; i < array.length; i++) {
-            newArray[i] = array[i];
-        }
-        newArray[newArray.length - 1] = newPart;
-        return newArray;
-    }
-
     
     /**
      * sets the password between the max and min characters and ensure the user
@@ -184,8 +159,8 @@ import gameTools.Constants;
      * @return if the name is taken or not
      */
     private boolean nameTaken(String name) {
-        for (int i = 0; i < allAccounts.length; i++) {
-            if(allAccounts[i].name.equalsIgnoreCase(name)) return true;
+        for (int i = 0; i < allAccounts.getLength(); i++) {
+            if(allAccounts.get(i).name.equalsIgnoreCase(name)) return true;
         }
         return false;
     }

@@ -22,6 +22,7 @@ import javax.swing.JTextArea;
     public final static int BASE_SHIP_MOVEMENT = 2;
     public final static int BASE_LIVES         = 3;
     public final static int BASE_PLAYER_HEALTH = 6;
+    public final static int BASE_BOSS_HEALTH   = 40;
     public final static int BASE_SHIP_DAMAGE   = 1;
     public final static int BASE_SHIP_SIZE     = 30;
     public final static int BASE_BULLET_SIZE   = 5;

@@ -1,9 +1,9 @@
 package finalproject40s;
 
-
 import gameTools.Constants;
 import gameTools.Coordinates;
 import gameTools.Image;
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -19,6 +19,7 @@ public class PlayerShip extends Ship {
 
     /**
      * constructor for the player ship
+     *
      * @param image the image to display to the user to visualize this ship
      * @param engine the engine that runs the general logic of the game
      */
@@ -26,12 +27,12 @@ public class PlayerShip extends Ship {
         super(image, Constants.BASE_SHIP_MOVEMENT * 2, engine);
         firingDirection = Constants.NORTH_DIRECTION;
         damageOutput = Constants.BASE_SHIP_DAMAGE;
-        health = Constants.BASE_PLAYER_HEALTH - 3 + engine.manager.difficulty;
+        health = Constants.BASE_PLAYER_HEALTH;
         speed = Constants.BASE_SHIP_MOVEMENT * 2;
         shipNumber = Constants.PLAYER_SHIP_NUMBER;
         canFire = true;
-        this.image.picture.setIcon(new javax.swing.ImageIcon(getClass().getResource
-        ("/media/startingPlayerShip.png")));
+        this.image.picture.setIcon(new javax.swing.ImageIcon(
+                getClass().getResource("/media/startingPlayerShip.png")));
         invincible = false;
         upgrades = new int[3];
         firingTimer = new Timer(Constants.PLAYER_FIRING_DELAY, new ActionListener() {
@@ -49,7 +50,7 @@ public class PlayerShip extends Ship {
             @Override
             public void actionPerformed(ActionEvent e) {
                 upgradeCount[Upgrade.FIRING - 1]--;
-                engine.changeUpgradeCount(Upgrade.FIRING, upgradeCount[Upgrade.FIRING -1]);
+                engine.changeUpgradeCount(Upgrade.FIRING, upgradeCount[Upgrade.FIRING - 1]);
                 if (upgradeCount[Upgrade.FIRING - 1] <= 0) {
                     upgradeTimers[Upgrade.FIRING - 1].stop();
                     firingTimer.setInitialDelay(Constants.PLAYER_FIRING_DELAY);
@@ -66,25 +67,27 @@ public class PlayerShip extends Ship {
                 engine.changeUpgradeCount(Upgrade.SPEED, upgradeCount[Upgrade.SPEED - 1]);
                 if (upgradeCount[Upgrade.SPEED - 1] <= 0) {
                     upgradeTimers[Upgrade.SPEED - 1].stop();
-                    coordinates.amount = Constants.BASE_SHIP_MOVEMENT;
+                    coordinates.amount = Constants.BASE_SHIP_MOVEMENT * 2;
+                    speed = coordinates.amount;
                     upgradeCount[Upgrade.SPEED - 1] = Constants.UPGRADE_COUNT;
                 }
             }
         });
         upgradeCount[Upgrade.STRENGTH - 1] = Constants.UPGRADE_COUNT;
-        upgradeTimers[Upgrade.STRENGTH - 1] = new Timer(Constants.ONE_SECOND, 
+        upgradeTimers[Upgrade.STRENGTH - 1] = new Timer(Constants.ONE_SECOND,
                 new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 upgradeCount[Upgrade.STRENGTH - 1]--;
-                engine.changeUpgradeCount(Upgrade.STRENGTH, upgradeCount[Upgrade.STRENGTH -1]);
+                engine.changeUpgradeCount(Upgrade.STRENGTH,
+                        upgradeCount[Upgrade.STRENGTH - 1]);
                 if (upgradeCount[Upgrade.STRENGTH - 1] <= 0) {
                     invincible = false;
                     upgradeTimers[Upgrade.STRENGTH - 1].stop();
                     upgradeCount[Upgrade.STRENGTH - 1] = Constants.UPGRADE_COUNT;
-                    Constants.output("Change progress bar for invincible display"
-                            + " code here", true);
-               }
+                    image.picture.setIcon(new javax.swing.ImageIcon(
+                            getClass().getResource("/media/startingPlayerShip.png")));
+                }
             }
         });
         upgradeCount[Upgrade.DAMAGE - 1] = Constants.UPGRADE_COUNT;
@@ -92,7 +95,7 @@ public class PlayerShip extends Ship {
             @Override
             public void actionPerformed(ActionEvent e) {
                 upgradeCount[Upgrade.DAMAGE - 1]--;
-                engine.changeUpgradeCount(Upgrade.DAMAGE, upgradeCount[Upgrade.DAMAGE -1]);
+                engine.changeUpgradeCount(Upgrade.DAMAGE, upgradeCount[Upgrade.DAMAGE - 1]);
                 if (upgradeCount[Upgrade.DAMAGE - 1] <= 0) {
                     damageOutput = Constants.BASE_SHIP_DAMAGE;
                     upgradeTimers[Upgrade.DAMAGE - 1].stop();
@@ -105,9 +108,10 @@ public class PlayerShip extends Ship {
         EnemyShip.player = this;
     }
 
-
     /**
-     * updates the list of upgrades the player has and adds the newest picked up upgrade
+     * updates the list of upgrades the player has and adds the newest picked up
+     * upgrade
+     *
      * @param newUpgradeType the type of the newest upgrade that was picked up
      */
     public void pickUpUpgrade(int newUpgradeType) {
@@ -129,31 +133,36 @@ public class PlayerShip extends Ship {
      * uses the first upgrade if there is one
      */
     public void useUpgrade() {
-        if(upgrades[0] == 0) return;
-        if(upgrades[0] == Upgrade.FIRING) {
+        if (upgrades[0] == 0) {
+            return;
+        }
+        if (upgrades[0] == Upgrade.FIRING) {
             firingTimer.setInitialDelay(75);
             upgradeTimers[Upgrade.FIRING - 1].start();
-        } else if(upgrades[0] == Upgrade.STRENGTH) {
+        } else if (upgrades[0] == Upgrade.STRENGTH) {
             invincible = true;
-            Constants.output("Put change ship colour code here", true);
+            image.picture.setIcon(new javax.swing.ImageIcon(
+                    getClass().getResource("/media/greenShip.png")));
             upgradeCount[Upgrade.STRENGTH - 1] = Constants.UPGRADE_COUNT;
             upgradeTimers[Upgrade.STRENGTH - 1].start();
-        } else if(upgrades[0] == Upgrade.DAMAGE) {
+        } else if (upgrades[0] == Upgrade.DAMAGE) {
             upgradeTimers[Upgrade.DAMAGE - 1].start();
             damageOutput = Constants.BASE_SHIP_DAMAGE * 2;
-        } else if(upgrades[0] == Upgrade.SPEED) {
+        } else if (upgrades[0] == Upgrade.SPEED) {
             coordinates.amount = Constants.BASE_SHIP_MOVEMENT * 3;
+            speed = coordinates.amount;
             upgradeTimers[Upgrade.SPEED - 1].start();
         }
+        engine.changeUpgradeCount(upgrades[0], Constants.UPGRADE_COUNT);
         upgrades[0] = upgrades[1];
         upgrades[1] = upgrades[2];
         upgrades[2] = 0;
         engine.updateUpgradeImages();
     }
 
-
     /**
      * stops the ship from moving when they release the key they were holding
+     *
      * @param evt the key the user pressed
      */
     public void keyReleased(KeyEvent evt) {
@@ -183,7 +192,7 @@ public class PlayerShip extends Ship {
             coordinates.direction = Constants.STOP_DIRECTION;
         }
     }
-    
+
     /**
      * a user keyboard event
      *
@@ -210,36 +219,43 @@ public class PlayerShip extends Ship {
         } else if (evt.getKeyCode() == KeyEvent.VK_RIGHT && engine.manager.usingArrowKeys) {
             coordinates.direction = Constants.EAST_DIRECTION;
         } else if (evt.getKeyCode() == KeyEvent.VK_SPACE) {
-                fire();
+            fire();
         } else if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             useUpgrade();
         }
     }
 
     /**
-     * reduces health, kills player if out of health and ends game if out of lives
+     * reduces health, kills player if out of health and ends game if out of
+     * lives
+     *
      * @param damage the amount of damage the player has been dealt
      */
     @Override
     public void hit(int damage) {
-        health-= damage;
-        engine.playerHealthBar.setValue(health);
-        if(health <= 0) {
-            hide();
-            engine.changeLives(-1);
-            Constants.output("You Died!! \nYou have " + engine.lives + " Lives left", true);
-            if(engine.lives <= 0) engine.exit(Constants.LOST_GAME);
-            coordinates.changeCoordinates(startingCoordinates);
-            damageOutput = Constants.BASE_SHIP_DAMAGE;
-            health = Constants.BASE_PLAYER_HEALTH;
-            speed = Constants.BASE_SHIP_MOVEMENT;
-            firingTimer.setInitialDelay(1100);
-            redraw();
-            show();
+        if (!invincible) {
+            health -= damage;
+            engine.playerHealthBar.setValue(health);
+            if (health <= 0) {
+                hide();
+                engine.changeLives(-1);
+                Constants.output("You Died!! \nYou have " + engine.lives + " Lives left", true);
+                if (engine.lives <= 0) {
+                    engine.exit(Constants.LOST_GAME);
+                }
+                coordinates.changeCoordinates(startingCoordinates);
+                damageOutput = Constants.BASE_SHIP_DAMAGE;
+                health = Constants.BASE_PLAYER_HEALTH;
+                speed = Constants.BASE_SHIP_MOVEMENT * 2;
+                firingTimer.setInitialDelay(1100);
+                redraw();
+                show();
+            }
         }
+
         engine.playerHealthBar.setValue(health);
     }
-    
+
     @Override
     public void action() {
         move();
@@ -247,9 +263,10 @@ public class PlayerShip extends Ship {
         checkWalls();
         checkShips();
     }
-    
+
     /**
      * controls to make bug testing easier and quicker
+     *
      * @param evt key pressed
      */
     private void adminControls(KeyEvent evt) {
@@ -258,16 +275,18 @@ public class PlayerShip extends Ship {
         } else if (evt.getKeyCode() == KeyEvent.VK_2) {
             engine.spawnShip();
             shipList.get(shipList.getLength() - 1).redraw();
-        }else if (evt.getKeyCode() == KeyEvent.VK_3) {
+        } else if (evt.getKeyCode() == KeyEvent.VK_3) {
             Constants.output("X = " + coordinates.x + ", y = " + coordinates.y + ","
-                    + " direction = " + coordinates.direction + ", health = " 
-                    + health + ", damage = " + damageOutput + ", invincible = " 
+                    + " direction = " + coordinates.direction + ", health = "
+                    + health + ", damage = " + damageOutput + ", invincible = "
                     + invincible, false);
         } else if (evt.getKeyCode() == KeyEvent.VK_4) {
             pickUpUpgrade(Constants.random(1, Constants.NUMBER_OF_UPGRADES - 1));
         } else if (evt.getKeyCode() == KeyEvent.VK_5) {
-            
+            engine.addPoint(this);
+        } else if (evt.getKeyCode() == KeyEvent.VK_6) {
+            engine.spawnBoss();
         }
     }
-    
+
 }

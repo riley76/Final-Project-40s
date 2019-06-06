@@ -56,7 +56,7 @@ public abstract class EnemyShip extends Ship {
         if(!isAlive) return; // to avoid false errors
         health-= damage;
         if(health <= 0) {
-            Constants.errorCheck(destroyed(), "Ship destroyed in walls");
+            destroyed();
         }
     }
     

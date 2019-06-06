@@ -26,7 +26,6 @@ public class Bullet extends GameCharacter {
         this.engine = engine;
         ship = shipFiredFrom;
         this.damage = ship.damageOutput;
-        engine.bulletList.add(this);
         coordinates.direction = ship.firingDirection;
         if(ship.firingDirection == Constants.UP_DIRECTION || ship.firingDirection == Constants.NORTH_DIRECTION) {
             coordinates.y = coordinates.y - (int)(ship.coordinates.height *.5);
@@ -53,7 +52,6 @@ public class Bullet extends GameCharacter {
             if(isColliding(shipList.get(i)) && ship.shipNumber != shipList.get(i).shipNumber) {
                 shipList.get(i).hit(damage);
                 shutDown();
-                engine.bulletList.remove(this);
                 return;
             }
         }
@@ -66,7 +64,6 @@ public class Bullet extends GameCharacter {
         for (int i = 0; i < engine.walls.length; i++) {
             if(isColliding(engine.walls[i])) {
                 shutDown();
-                engine.bulletList.remove(this);
                 return;
             }
         }       

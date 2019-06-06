@@ -21,8 +21,8 @@ public class Upgrade extends GameCharacter{
     public static final int DAMAGE   = 4;
     public static final int SPEED    = 2;
     public static final Color[] SHIP_COLOURS = {Color.magenta, Color.cyan, 
-        Color.green, Color.orange, Color.yellow};
-    public static final String[] NAMES = {"Firing", "Strength", "Speed", "Invincible", "Life"};
+        Color.green, Color.orange, Color.PINK};
+    public static final String[] NAMES = {"Firing", "Speed", "Invincible", "Damage", "Life"};
     
     
     
@@ -39,7 +39,7 @@ public class Upgrade extends GameCharacter{
         if(upgradeType == STRENGTH) {
             image.setDebug("Strong", SHIP_COLOURS[upgradeType - 1]);
         } else {
-            image.setDebug(NAMES[upgradeType], SHIP_COLOURS[upgradeType - 1]);
+            image.setDebug(NAMES[upgradeType - 1], SHIP_COLOURS[upgradeType - 1]);
         }
     }
 

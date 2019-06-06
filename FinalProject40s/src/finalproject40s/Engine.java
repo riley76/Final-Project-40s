@@ -7,6 +7,7 @@ import gameTools.Wall;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javafx.scene.control.ProgressBar;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
@@ -34,14 +35,15 @@ public class Engine {
     public PlayerShip player;
     private Background background;
     public boolean isRunning;
-    public LinkedList<Bullet> bulletList = new LinkedList<>();
-    javax.swing.JButton closeButton;
-    javax.swing.JProgressBar playerHealthBar;
-    Image livesCounter;
-    Image time;
-    Image pointsCounter;
-    Image[] upgradeSlots;
-    Image[] upgradeTimers;
+    public javax.swing.JProgressBar playerHealthBar;
+    private javax.swing.JButton closeButton;
+    private Image livesCounter;
+    private Image time;
+    public Image pointsCounter;
+    private Image[] upgradeSlots;
+    private Image[] upgradeTimers;
+    private Image bossHealthLabel;
+    public javax.swing.JProgressBar bossHealth;
     
     
 
@@ -83,7 +85,8 @@ public class Engine {
                 }
             }
         });
-        spawnTimer = new Timer( 3000 +(2000 * this.manager.difficulty), new ActionListener() {
+        spawnTimer = new Timer( 3000 +(2000 * this.manager.difficulty),
+                new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (isRunning) {
@@ -109,7 +112,7 @@ public class Engine {
         manager.addPoint();
         int upgradeSpawn = Constants.getPercentage();
         if(upgradeSpawn <= (10 + (18 * manager.difficulty))) spawnUpgrade(ship);
-        if(points == Constants.POINTS_TO_BOSS && !manager.neverEnding) spawnBoss();
+        if(points >= Constants.POINTS_TO_BOSS && !manager.neverEnding) spawnBoss();
     }
 
     /**
@@ -138,7 +141,8 @@ public class Engine {
                     + "you died!", true);
         } else if (exitType == Constants.WON_GAME) {
             Constants.output(" You have beaten the Space Monsters! Way to go!"
-                    + "\n It took you " + timeMinutes + " minutes and " + timeSeconds + " seconds to Win!", true);
+                    + "\n It took you " + timeMinutes + " minutes and " + 
+                    timeSeconds + " seconds to Win!", true);
         }
         manager.play();
     }
@@ -164,7 +168,7 @@ public class Engine {
                     Constants.BASE_SHIP_SIZE), this, manager.difficulty);
             add(ship.image.picture);
         } else {
-            System.out.println("Error in ship typing ");
+            System.out.println("Error in ship typing, type " + shipType);
         }
     }
 
@@ -201,7 +205,7 @@ public class Engine {
         player = new PlayerShip(new Image(800, 750, 25, 45), this);
         ui.add(player.image.picture);
         closeButton = new javax.swing.JButton();
-        closeButton.setBounds(1, 920, 100, 75);
+        closeButton.setBounds(1, 920, 90, 75);
         closeButton.setText("Exit Game");
         closeButton.setBackground(Color.RED);
         closeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -222,50 +226,67 @@ public class Engine {
             }
         });
         ui.add(closeButton);
-        Image healthLabel = new Image(110, 928, 60, 60);
+        Image healthLabel = new Image(95, 928, 55, 60);
         healthLabel.setDebug("Health:", Color.BLACK);
         healthLabel.picture.setForeground(Color.WHITE);
         healthLabel.picture.setFont(Constants.BASE_FONT);
         ui.add(healthLabel.picture);
         playerHealthBar = new javax.swing.JProgressBar();
-        playerHealthBar.setBounds(185, 928, 300, 60);
-        playerHealthBar.setMaximum(Constants.BASE_PLAYER_HEALTH - 3 + manager.difficulty);
+        playerHealthBar.setBounds(155, 928, 315, 60);
+        playerHealthBar.setMaximum(Constants.BASE_PLAYER_HEALTH - 3 +
+                manager.difficulty);
         playerHealthBar.setForeground(Color.green);
         playerHealthBar.setBackground(Color.RED);
         playerHealthBar.setValue(player.health);
         ui.add(playerHealthBar);
-        livesCounter = new Image(525, 925, 85, 30);
+        livesCounter = new Image(475, 925, 85, 30);
         changeLives(0);
         livesCounter.picture.setForeground(Color.WHITE);
         livesCounter.picture.setFont(Constants.BASE_FONT);
         ui.add(livesCounter.picture);
-        time = new Image(525, 960, 95, 30);
+        time = new Image(475, 960, 95, 30);
         time.setDebug("Time: 00:00", Color.BLACK);
         time.picture.setForeground(Color.WHITE);
         time.picture.setFont(Constants.BASE_FONT);
         ui.add(time.picture);
-        pointsCounter = new Image(630, 960, 80, 30);
+        pointsCounter = new Image(575, 960, 80, 30);
         pointsCounter.setDebug("Points: 0", Color.BLACK);
         pointsCounter.picture.setForeground(Color.WHITE);
         pointsCounter.picture.setFont(Constants.BASE_FONT);
         ui.add(pointsCounter.picture);
         upgradeSlots = new Image[Constants.NUMBER_OF_UPGRADE_SLOTS];
         for (int i = 0; i < upgradeSlots.length; i++) {
-            upgradeSlots[i] = new Image(725 +(95 * i), 925, 75, 65);
+            upgradeSlots[i] = new Image(665 +(95 * i), 925, 65, 65);
             upgradeSlots[i].setDebug("Slot " + (i + 1) + ": Empty", Color.BLUE);
             ui.add(upgradeSlots[i].picture);
             time.picture.setForeground(Color.WHITE);
         }
         upgradeTimers = new Image[Constants.NUMBER_OF_UPGRADES - 1];
         for (int i = 0; i < upgradeTimers.length; i++) {
-            if(Constants.isEven(i)) upgradeTimers[i] = new Image(1025 + (i * 70), 930, 135, 30);
-            else upgradeTimers[i] = new Image(1025 + ((i - 1) * 70), 965, 135, 30);
-            upgradeTimers[i].setDebug(Upgrade.NAMES[i] + " Time: 10", Color.BLACK);
+            if(Constants.isEven(i)) upgradeTimers[i] = new Image(940 + (i * 70),
+                    930, 135, 30);
+            else upgradeTimers[i] = new Image(940 + ((i - 1) * 70), 965, 135, 30);
+            upgradeTimers[i].setDebug(Upgrade.NAMES[i] + " Time: " + 
+                    Constants.UPGRADE_COUNT, Color.BLACK);
             upgradeTimers[i].picture.setForeground(Color.WHITE);
             upgradeTimers[i].picture.setFont(Constants.BASE_FONT);
-//            upgradeTimers[i].hide();
+            upgradeTimers[i].hide();
             ui.add(upgradeTimers[i].picture);
         }
+        bossHealthLabel = new Image(1385, 925, 100, 68);
+        bossHealthLabel.picture.setText("Boss Health");
+        bossHealthLabel.picture.setForeground(Color.WHITE);
+        bossHealthLabel.picture.setFont(Constants.BASE_FONT);
+        ui.add(bossHealthLabel.picture);
+        bossHealthLabel.hide();
+        bossHealth = new javax.swing.JProgressBar();
+        bossHealth.setBounds(1225, 925, 415, 68);
+        bossHealth.setMaximum(Constants.BASE_BOSS_HEALTH + 21 - (manager.difficulty * 7));
+        bossHealth.setForeground(Color.GREEN);
+        bossHealth.setBackground(Color.RED);
+        bossHealth.setValue(bossHealth.getMaximum());
+        bossHealth.setVisible(false);
+        ui.add(bossHealth);
         background = new Background(ui);
         ui.add(background.image.picture);
     }
@@ -316,12 +337,17 @@ public class Engine {
     }
     
     
-    
     /**
-     * spawns the boss ship and creates the bosses health bar at the top of the screen
+     * spawns the boss ship and creates the bosses health bar at the bottom of the screen
      */
-    private void spawnBoss() {
-        
+    public void spawnBoss() {
+        bossHealthLabel.show();
+        bossHealth.setVisible(true);
+        BossShip boss = new BossShip(new Image(ui.getWidth() / 2, Constants.ENEMY_SPAWN_Y,
+                (int)(Constants.BASE_SHIP_SIZE * 3.5), 
+                (int)(Constants.BASE_SHIP_SIZE * 3.5)), 
+                (int) (Constants.BASE_SHIP_MOVEMENT), 10, this);
+        add(boss.image.picture);
     }
 
     /**
@@ -354,15 +380,16 @@ public class Engine {
      * @param timeLeft the time left before the timer reaches the end
      */
     public void changeUpgradeCount(int upgrade, int timeLeft) {
-        if(upgrade >= upgradeTimers.length || timeLeft < 0)  {
+        if(upgrade > upgradeTimers.length || timeLeft < 0)  {
             System.out.println("error in upgrade time Left code with " + timeLeft
-                    + " Time Left");
+                    + " Time Left on upgrade " + upgrade);
             return;
         }
-        if(timeLeft == 0) upgradeTimers[upgrade].hide();
-        else upgradeTimers[upgrade].show();
-        upgradeTimers[upgrade].setDebug(Upgrade.NAMES[upgrade] + " Time: 10", Color.BLACK);
-        upgradeTimers[upgrade].picture.setFont(Constants.BASE_FONT);
+        if(timeLeft == 0) upgradeTimers[upgrade - 1].hide();
+        else upgradeTimers[upgrade - 1].show();
+        upgradeTimers[upgrade - 1].setDebug(Upgrade.NAMES[upgrade - 1] + " Time: " +
+                timeLeft, Color.BLACK);
+        upgradeTimers[upgrade - 1].picture.setFont(Constants.BASE_FONT);
     }
     
 }

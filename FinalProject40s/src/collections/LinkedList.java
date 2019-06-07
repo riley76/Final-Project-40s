@@ -114,6 +114,7 @@ import java.lang.reflect.Array;
         }
         return text + current.toString() +"]";
     }
+    
      
     /**
      * Determines if two objects are "equal" in this context

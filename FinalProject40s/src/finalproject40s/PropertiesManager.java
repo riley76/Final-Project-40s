@@ -7,6 +7,7 @@ import static gameTools.Constants.missingWork;
 import static gameTools.Constants.options;
 import static gameTools.Constants.output;
 import gameTools.FileHandler;
+import gameTools.LinkedList;
 import java.awt.Color;
 import javax.swing.JOptionPane;
 
@@ -31,16 +32,17 @@ public class PropertiesManager {
     static boolean adminMode;
     static UiMenu ui;
     static boolean accountsCreated = false;
-    GameAccount accountLoggedIn = GUEST_ACCOUNT;
+    GameAccount accountLoggedIn;
 
     /**
      * default constructor for this class
      */
     public PropertiesManager() {
-        play();
         usingArrowKeys = true;
         difficulty = 3;
         adminMode = true;
+        accountLoggedIn = GUEST_ACCOUNT;
+        play();
     }
 
     /**
@@ -234,14 +236,17 @@ public class PropertiesManager {
             }
         } else if (currentMenu.equalsIgnoreCase(MENUS[3])) {
             if (accountLoggedIn.name.equalsIgnoreCase("Guest Stats")) {
-                String input = options("What account do you want", 
-                        GameAccount.accountNamesList.toArray(new String[GameAccount.accountNamesList.getLength()]));
-                if (input.equalsIgnoreCase(GameAccount.accountNamesList.get(0))) {
+                String input = options("What account do you want", GameAccount.getNames());
+                if (input.equalsIgnoreCase(GameAccount.getNames()[0])) {
                     toggleLoggedAccount(new GameAccount());
+                    FileHandler< LinkedList<GameAccount> > file = new FileHandler<>("Data.rw");
+                    file.saveObject(GameAccount.allAccounts, "Data.rw");
                     ui.button5.setText("Sign out of Account");
                 } else {
-                    for (int i = 1; i < GameAccount.accountNamesList.getLength(); i++) {
-                        if (GameAccount.accountNamesList.get(i).equalsIgnoreCase(input)) {
+                    FileHandler< LinkedList<GameAccount> > file = new FileHandler<>("Data.rw");
+                    GameAccount.allAccounts = file.openObject("Data.rw");
+                    for (int i = 1; i < GameAccount.getNames().length; i++) {
+                        if (GameAccount.getNames()[i].equalsIgnoreCase(input)) {
                             if (GameAccount.allAccounts.get(i - 1).signIn()) {
                                 toggleLoggedAccount(GameAccount.allAccounts.get(i - 1));
                                 ui.button5.setText("Sign out of Account");
@@ -284,12 +289,10 @@ public class PropertiesManager {
                 output("No Accounts to view!", true);
                 return;
             }
-            FileHandler fileHandler = new FileHandler("Accounts");
-            String input = options("What Account do You Want To View?",
-                    GameAccount.accountNamesList.toArray(new String[GameAccount.accountNamesList.getLength()]));
+            String input = options("What Account do You Want To View?", GameAccount.getNames());
             for (int i = 1; i < GameAccount.allAccounts.getLength() + 1; i++) {
-                if (input.equalsIgnoreCase(GameAccount.accountNamesList.get(i))) {
-                    GameAccount.allAccounts.get(i).displayStatistics();
+                if (input.equalsIgnoreCase(GameAccount.getNames()[i -1])) {
+                    GameAccount.allAccounts.get(i - 1).displayStatistics();
                 }
             }
         }
@@ -333,10 +336,10 @@ public class PropertiesManager {
             return;
         }
         GameAccount leaderBoards[];
-        if (GameAccount.allAccounts.getLength() >= MAX_LEADERBOARDS) {
+        if (GameAccount.allAccounts.getLength() - 1 >= MAX_LEADERBOARDS) {
             leaderBoards = new GameAccount[MAX_LEADERBOARDS];
         } else {
-            leaderBoards = new GameAccount[GameAccount.allAccounts.getLength()];
+            leaderBoards = new GameAccount[GameAccount.allAccounts.getLength() -1];
         }
         for (int i = 0; i < GameAccount.allAccounts.getLength(); i++) {
             int spot = spotWorks(leaderBoards.length - 
@@ -374,9 +377,16 @@ public class PropertiesManager {
         JOptionPane.showMessageDialog(null, " Thank You for Playing " + APP_TITLE + ", "
                 + "\n We hope you Play again soon", APP_TITLE, 1);
         System.exit(0);
-        accountLoggedIn.signIn();
     }
     
+    /**
+     * finds the spot at which this account is at in terms of points
+     * @param accountsToCheck the current account being checked
+     * @param index the index of the current account being checked
+     * @param compare the last accounts points
+     * @param length the length
+     * @return 
+     */
     private int getSpot(GameAccount[] accountsToCheck, int index, int compare, int length) {
         if(index >= length) return 0;
         if(compare < accountsToCheck[index].totalPoints) {
@@ -385,7 +395,6 @@ public class PropertiesManager {
         return 1 + getSpot(accountsToCheck, index + 1, compare, length);         
                 
     }
-    
     
     private int spotWorks(int spot, GameAccount[] leaderBoards) {
             if(spot >= leaderBoards.length) return MAX_LEADERBOARDS;

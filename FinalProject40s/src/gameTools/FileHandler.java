@@ -5,12 +5,15 @@ package gameTools;
 /** required package class namespace */
 
 /** required imports */
-import collections.LinkedList;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,7 +26,7 @@ import java.net.URL;
  * @author Mr. Wachs
  * @since 14-May-2019 
  */
-public class FileHandler 
+public class FileHandler <T>
 {
     
     private String filename;
@@ -112,5 +115,87 @@ public class FileHandler
         }
         return null;                                        // error caught
     }
+    
+    /**
+     * Saves the generic object to the passed file
+     * 
+     * @param data the generic object to save
+     * @param file the file object to save to
+     * @return the operation was successful (true) or not (false)
+     */
+    public boolean saveObject(T data, File file) {
+        try {
+            return saveObject(data, file.getAbsolutePath());
+        }
+        catch(NullPointerException e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Saves the generic object to the passed filename
+     * 
+     * @param data the generic object to save
+     * @param filename the filename to save it to
+     * @return the operation was successful (true) or not (false)
+     */
+    public boolean saveObject(T data, String filename) {
+        try {
+            FileOutputStream   stream = new FileOutputStream(filename);
+            ObjectOutputStream output = new ObjectOutputStream(stream);
+            output.writeObject(data);
+            output.close();
+            return true;
+        }
+        catch(NullPointerException e) {
+            return false;
+        }
+        catch (IOException error) {
+            return false;
+        }
+    }
+    
+    /**
+     * Opens the passed filename and reads the generic object from it
+     * 
+     * @param filename the filename to open
+     * @return the generic data type in the file
+     */
+    public T openObject(String filename) {
+        try {
+            FileInputStream   stream = new FileInputStream(filename);
+            ObjectInputStream input  = new ObjectInputStream(stream);
+            T object = (T)input.readObject();
+            input.close();
+            return object;            
+        }
+        catch (ClassCastException e) {
+            return null;
+        }
+        catch (ClassNotFoundException e) {
+            return null;
+        }
+        catch(NullPointerException e) {
+            return null;
+        }
+        catch (IOException error) {
+            return null;
+        }
+    }
+    
+    /**
+     * Opens the passed file object and reads the generic object from it
+     * 
+     * @param file the file object to open
+     * @return the generic data type in the file
+     */
+    public T openObject(File file) {
+        try {
+            return openObject(file.getAbsolutePath());
+        }
+        catch(NullPointerException e) {
+            return null;
+        }
+    } 
     
 }

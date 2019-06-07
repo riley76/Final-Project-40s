@@ -2,6 +2,7 @@
 package gameTools;
 
 import collections.Node;
+import java.io.Serializable;
 import java.lang.reflect.Array;
 
 /**
@@ -10,7 +11,7 @@ import java.lang.reflect.Array;
  * @author riley.w
  * @since 6-May-2019
  */
- public class LinkedList <T>{
+ public class LinkedList <T> implements Serializable{
         
     // reference (link) to the first node in the list (entry Point)
     private Node head;
@@ -115,6 +116,21 @@ import java.lang.reflect.Array;
         }
         return text + current.toString() +"]";
     }
+    
+    /**
+     * turns the data into a linked list of Strings
+     * @return the linked list of strings
+     */
+    public LinkedList<String> toStringList() {
+        if(isEmpty()) return null;
+        LinkedList<String> list = new LinkedList<>();
+        for (int i = 0; i < length; i++) {
+            list.add(get(i).toString());
+        }
+        return list;
+    }
+    
+    
      
     /**
      * Determines if two objects are "equal" in this context

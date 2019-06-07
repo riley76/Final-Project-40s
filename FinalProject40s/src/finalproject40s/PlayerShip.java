@@ -24,11 +24,11 @@ public class PlayerShip extends Ship {
      * @param engine the engine that runs the general logic of the game
      */
     public PlayerShip(Image image, Engine engine) {
-        super(image, Constants.BASE_SHIP_MOVEMENT * 2, engine);
+        super(image, (int)(Constants.BASE_SHIP_MOVEMENT * 1.5), engine);
         firingDirection = Constants.NORTH_DIRECTION;
         damageOutput = Constants.BASE_SHIP_DAMAGE;
         health = Constants.BASE_PLAYER_HEALTH;
-        speed = Constants.BASE_SHIP_MOVEMENT * 2;
+        speed = coordinates.amount;
         shipNumber = Constants.PLAYER_SHIP_NUMBER;
         canFire = true;
         this.image.picture.setIcon(new javax.swing.ImageIcon(
@@ -64,10 +64,11 @@ public class PlayerShip extends Ship {
             @Override
             public void actionPerformed(ActionEvent e) {
                 upgradeCount[Upgrade.SPEED - 1]--;
-                engine.changeUpgradeCount(Upgrade.SPEED, upgradeCount[Upgrade.SPEED - 1]);
+                engine.changeUpgradeCount(Upgrade.SPEED, 
+                        upgradeCount[Upgrade.SPEED - 1]);
                 if (upgradeCount[Upgrade.SPEED - 1] <= 0) {
                     upgradeTimers[Upgrade.SPEED - 1].stop();
-                    coordinates.amount = Constants.BASE_SHIP_MOVEMENT * 2;
+                    coordinates.amount = (int)(Constants.BASE_SHIP_MOVEMENT * 1.5);
                     speed = coordinates.amount;
                     upgradeCount[Upgrade.SPEED - 1] = Constants.UPGRADE_COUNT;
                 }
@@ -91,7 +92,8 @@ public class PlayerShip extends Ship {
             }
         });
         upgradeCount[Upgrade.DAMAGE - 1] = Constants.UPGRADE_COUNT;
-        upgradeTimers[Upgrade.DAMAGE - 1] = new Timer(Constants.ONE_SECOND, new ActionListener() {
+        upgradeTimers[Upgrade.DAMAGE - 1] = new Timer(Constants.ONE_SECOND,
+                new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 upgradeCount[Upgrade.DAMAGE - 1]--;
@@ -143,7 +145,6 @@ public class PlayerShip extends Ship {
             invincible = true;
             image.picture.setIcon(new javax.swing.ImageIcon(
                     getClass().getResource("/media/greenShip.png")));
-            upgradeCount[Upgrade.STRENGTH - 1] = Constants.UPGRADE_COUNT;
             upgradeTimers[Upgrade.STRENGTH - 1].start();
         } else if (upgrades[0] == Upgrade.DAMAGE) {
             upgradeTimers[Upgrade.DAMAGE - 1].start();
@@ -154,6 +155,7 @@ public class PlayerShip extends Ship {
             upgradeTimers[Upgrade.SPEED - 1].start();
         }
         engine.changeUpgradeCount(upgrades[0], Constants.UPGRADE_COUNT);
+        upgradeCount[upgrades[0] - 1] = Constants.UPGRADE_COUNT;
         upgrades[0] = upgrades[1];
         upgrades[1] = upgrades[2];
         upgrades[2] = 0;

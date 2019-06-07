@@ -3,6 +3,8 @@ package finalproject40s;
 
 import gameTools.Constants;
 import gameTools.LinkedList;
+import java.io.Serializable;
+/** required imports */
 
 /**
  * GameAccount.java - 
@@ -10,7 +12,7 @@ import gameTools.LinkedList;
  * @author riley.w
  * @since 2-May-2019
  */
- public class GameAccount {
+ public class GameAccount implements Serializable{
         
     public String name;
     private String passward;
@@ -18,7 +20,6 @@ import gameTools.LinkedList;
     public int pointsInLastGame;
     public int totalLivesLost;
     public int gamesPlayed;
-    static public LinkedList<String> accountNamesList = new LinkedList<>();
     static public LinkedList<GameAccount> allAccounts = new LinkedList<>();
     static final public int MAX_CHARACTER = 30;
     static final public int MIN_CHARACTER = 5;
@@ -45,7 +46,6 @@ import gameTools.LinkedList;
         pointsInLastGame = 0;
         totalLivesLost = 0;
         gamesPlayed = 0;
-        accountNamesList.add(name);
         allAccounts.add(this);
         PropertiesManager.accountsCreated = true;
         if(PropertiesManager.adminMode) {
@@ -65,21 +65,15 @@ import gameTools.LinkedList;
         pointsInLastGame = 0;
         totalLivesLost = 0;
         gamesPlayed = 0;
+        allAccounts.add(this);
     }
     
-    /**
-     * Creates a placeholder account when no one is signed in
-     * @param name used to signal that this is a Blank Account 
-     * @param points the points they have
-     */
-    public GameAccount(String name, int points) {
-        this.name = name;
-        passward = "12345"; // Deliberately 31 Characters
-        // so its not possible for a user to have this password
-        totalPoints = points;
-        pointsInLastGame = 0;
-        totalLivesLost = 0;
+    @Override
+    public String toString() {
+        return name + "," + passward + "," + totalPoints + ","
+                + pointsInLastGame + "," + totalLivesLost + "," + gamesPlayed;
     }
+    
     
     /**
      * signs them into their account if they have the correct password
@@ -164,5 +158,18 @@ import gameTools.LinkedList;
         }
         return false;
     }
+    
+    /**
+     * turns the names of all accounts into a string
+     * @return the array of names in the form of strings
+     */
+    public static String[] getNames() {
+        String[] names = new String[allAccounts.getLength()];
+        for (int i = 0; i < names.length; i++) {
+            names[i] = allAccounts.get(i).name;
+        }
+        return names;
+    }
+     
     
 }

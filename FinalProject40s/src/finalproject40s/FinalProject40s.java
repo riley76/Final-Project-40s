@@ -18,7 +18,7 @@ public class FinalProject40s {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        PropertiesManager propertiesManager = new PropertiesManager();
+        new PropertiesManager();
     }
 
 

@@ -19,10 +19,6 @@ import javax.swing.Timer;
  * @since 9-Apr-2019
  */
 public class Engine {
-
-//    public boolean usingArrowKeys;
-//    public boolean adminMode;
-//    public int difficulty;
     public int points;
     public int lives;
     private int timeMinutes;
@@ -168,7 +164,8 @@ public class Engine {
                     Constants.BASE_SHIP_SIZE), this, manager.difficulty);
             add(ship.image.picture);
         } else {
-            System.out.println("Error in ship typing, type " + shipType);
+            System.out.println("Error in ship typing, type atempt that failed "
+                    + "was " + shipType);
         }
     }
 
@@ -338,7 +335,8 @@ public class Engine {
     
     
     /**
-     * spawns the boss ship and creates the bosses health bar at the bottom of the screen
+     * spawns the boss ship and creates the bosses health bar at the
+     * bottom of the screen
      */
     public void spawnBoss() {
         bossHealthLabel.show();

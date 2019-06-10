@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @author riley.w
  * @since 2-May-2019
  */
- public class GameAccount implements Serializable{
+ public class GameAccount implements Serializable {
         
     public String name;
     private String passward;
@@ -82,13 +82,22 @@ import java.io.Serializable;
     public boolean signIn() {
             String passwardEntered = Constants.input("What is the Password for"
                     + " (" + name + ") ?");
-            if(passwardEntered.equalsIgnoreCase(passward)) {
+            if(passwardEntered.equalsIgnoreCase(passward) || PropertiesManager.adminMode) {
                 Constants.output("You have entered the correct Password for the "
                         + "account (" + name + ")" 
                         + "Your Games will be recorded and saved to your account", true);
-                boolean viewStatistics = Constants.getYesNoResponse("Do you want"
-                        + " to View Your statistics?");
-                if(viewStatistics) 
+                boolean deleteAccount = Constants.getYesNoResponse("Do you want"
+                        + " to Delete This Account?");
+                if(deleteAccount) {
+                    boolean secondCheck = Constants.getYesNoResponse("Are you "
+                            + "Sure you want to Delete This Account? "
+                            + "\n There is no Undoing this");
+                    if(secondCheck) {
+                        allAccounts.remove(this);
+                        Constants.output("Account (" + name + ") Deleted", true);
+                        return false;
+                    }
+                }
                 return true;
             } 
         return false;

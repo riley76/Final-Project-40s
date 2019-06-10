@@ -141,6 +141,8 @@ public class FileHandler <T>
      */
     public boolean saveObject(T data, String filename) {
         try {
+            File file = new File(filename);
+            if (!file.exists()) file.createNewFile();
             FileOutputStream   stream = new FileOutputStream(filename);
             ObjectOutputStream output = new ObjectOutputStream(stream);
             output.writeObject(data);
@@ -148,9 +150,11 @@ public class FileHandler <T>
             return true;
         }
         catch(NullPointerException e) {
+            System.out.println("save NullPointerException");
             return false;
         }
         catch (IOException error) {
+            System.out.println("save IOException");
             return false;
         }
     }
@@ -170,15 +174,19 @@ public class FileHandler <T>
             return object;            
         }
         catch (ClassCastException e) {
+            System.out.println("ClassCastException");
             return null;
         }
         catch (ClassNotFoundException e) {
+            System.out.println("ClassNotFoundException6");
             return null;
         }
         catch(NullPointerException e) {
+            System.out.println("NullPointerException");
             return null;
         }
         catch (IOException error) {
+            System.out.println("open IOException");
             return null;
         }
     }

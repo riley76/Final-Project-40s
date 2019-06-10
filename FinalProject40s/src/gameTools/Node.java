@@ -1,5 +1,7 @@
 
-package collections;
+package gameTools;
+
+import java.io.Serializable;
 
 /**
  * Node.java - 
@@ -7,7 +9,7 @@ package collections;
  * @author riley.w
  * @since 6-May-2019
  */
- public class Node <T>{
+ public class Node <T> implements Serializable {
         
     public T data;
     public Node next;
@@ -16,6 +18,9 @@ package collections;
      
     /**
      * constructor for this class
+     * @param data
+     * @param next
+     * @param previous
      */
     public Node(T data, Node next, Node previous) {
         this.data = data;
@@ -25,6 +30,7 @@ package collections;
     
     /**
      * constructor for this class
+     * @param data
      */
     public Node(T data) {
         this.data = data;

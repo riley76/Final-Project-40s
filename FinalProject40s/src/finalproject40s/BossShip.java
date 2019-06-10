@@ -1,6 +1,5 @@
 package finalproject40s;
 
-
 import gameTools.Constants;
 import gameTools.Image;
 import java.awt.Color;
@@ -18,13 +17,16 @@ public class BossShip extends EnemyShip {
         speed = amount;
         if(engine.manager.difficulty <= 1)damageOutput = Constants.BASE_SHIP_DAMAGE * 3;
         else damageOutput = Constants.BASE_SHIP_DAMAGE * 2;
-        firingTimer = new Timer((2 + engine.manager.difficulty) * 525, new ActionListener() {
+        firingTimer = new Timer((2 + engine.manager.difficulty) * 475, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fire();
+                fire(true);
+                fire(false);
             }
+
         });
         firingTimer.start();
+        
         
     }
 
@@ -48,6 +50,15 @@ public class BossShip extends EnemyShip {
         engine.exit(Constants.WON_GAME);
         return shipList.remove(this);
     }
-
+    
+    
+    public void fire(boolean rightSide) {
+       if(isAlive) {
+           engine.spawnBullet(this, rightSide);
+           firingTimer.start();
+       }
+    }
+    
+    
     
 }

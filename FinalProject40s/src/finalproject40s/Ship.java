@@ -1,10 +1,10 @@
 package finalproject40s;
 
 
-import collections.LinkedList;
 import gameTools.Constants;
 import gameTools.GameCharacter;
 import gameTools.Image;
+import gameTools.LinkedList;
 import javax.swing.Timer;
 
 public abstract class Ship extends GameCharacter{

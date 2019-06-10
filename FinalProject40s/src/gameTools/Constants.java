@@ -169,8 +169,11 @@ import javax.swing.JTextArea;
      */
     public static String options(String text, final String[] OPTIONS) {
         JTextArea area = getTextArea(text);
-        return JOptionPane.showInputDialog(null, area, "Chose One of the Options Below",
+        String result = JOptionPane.showInputDialog(null, area, "Chose One of the Options Below",
                 JOptionPane.PLAIN_MESSAGE, null, OPTIONS, OPTIONS[0]).toString();
+        System.out.println("result = " + result);
+        if (result == null) return OPTIONS[0];
+        return result;
     }
     
     private static JTextArea getTextArea(String text) {

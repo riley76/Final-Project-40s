@@ -1,13 +1,11 @@
 package finalproject40s;
 
-import collections.LinkedList;
 import gameTools.Constants;
 import gameTools.Image;
 import gameTools.Wall;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javafx.scene.control.ProgressBar;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
@@ -178,13 +176,40 @@ public class Engine {
         if (ship == null || ship.shipNumber < Constants.PLAYER_SHIP_NUMBER) {
             return false;
         }
-        Bullet bullet = new Bullet(new Image(ship.coordinates.x, ship.coordinates.y,
+        Bullet bullet = new Bullet(new Image(ship.coordinates.x +
+                (int)(ship.coordinates.width / 2), ship.coordinates.y,
                 Constants.BASE_BULLET_SIZE, Constants.BASE_BULLET_SIZE),
                 ship.speed * 3, 10, ship, this);
         add(bullet.image.picture);
         return true;
     }
 
+    /**
+     * spawns a bullet above the ship that fired it to one direction or the other
+     * @param ship the ship that fired it
+     * @return if a bullet was spawned or not
+     */
+    public boolean spawnBullet(Ship ship, boolean rightSide) {
+        if (ship == null || ship.shipNumber < Constants.PLAYER_SHIP_NUMBER) {
+            return false;
+        }
+        Bullet bullet;
+        if(rightSide) {
+            bullet = new Bullet(new Image(ship.coordinates.x + 
+                ship.coordinates.width - 5, ship.coordinates.y,
+                Constants.BASE_BULLET_SIZE, Constants.BASE_BULLET_SIZE),
+                ship.speed * 3, 10, ship, this);
+        } else {
+            bullet = new Bullet(new Image(ship.coordinates.x + 5, ship.coordinates.y,
+                Constants.BASE_BULLET_SIZE, Constants.BASE_BULLET_SIZE),
+                ship.speed * 3, 10, ship, this);
+        }
+        add(bullet.image.picture);
+        return true;
+    }
+    
+    
+    
     /**
      * creates the in game menu and the player images that are displayed to the
      * user

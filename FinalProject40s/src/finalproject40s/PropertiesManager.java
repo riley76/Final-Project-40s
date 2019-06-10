@@ -9,6 +9,7 @@ import static gameTools.Constants.output;
 import gameTools.FileHandler;
 import gameTools.LinkedList;
 import java.awt.Color;
+import java.io.File;
 import javax.swing.JOptionPane;
 
 /**
@@ -235,23 +236,32 @@ public class PropertiesManager {
                 difficulty = 3;
             }
         } else if (currentMenu.equalsIgnoreCase(MENUS[3])) {
+            
+            String path = "/media/Data.rw";
+            FileHandler< LinkedList<GameAccount> > filehandler = new FileHandler<>(path);
+            File file = filehandler.convertToFile(path);
+            
             if (accountLoggedIn.name.equalsIgnoreCase("Guest Stats")) {
+                GameAccount.allAccounts = filehandler.openObject(file);
                 String input = options("What account do you want", GameAccount.getNames());
                 if (input.equalsIgnoreCase(GameAccount.getNames()[0])) {
                     toggleLoggedAccount(new GameAccount());
-                    FileHandler< LinkedList<GameAccount> > file = new FileHandler<>("Data.rw");
-                    file.saveObject(GameAccount.allAccounts, "Data.rw");
+                    filehandler.saveObject(GameAccount.allAccounts, file);
+                    System.out.println("Saved data to " + file);
                     ui.button5.setText("Sign out of Account");
                 } else {
-                    FileHandler< LinkedList<GameAccount> > file = new FileHandler<>("Data.rw");
-                    GameAccount.allAccounts = file.openObject("Data.rw");
-                    for (int i = 1; i < GameAccount.getNames().length; i++) {
+                    if(GameAccount.allAccounts == null) {
+                        System.out.println("null GameAccount.allAccounts");
+                        return;
+                    }
+                    for (int i = 1; i < GameAccount.allAccounts.getLength(); i++) {
                         if (GameAccount.getNames()[i].equalsIgnoreCase(input)) {
-                            if (GameAccount.allAccounts.get(i - 1).signIn()) {
-                                toggleLoggedAccount(GameAccount.allAccounts.get(i - 1));
+                            if (GameAccount.allAccounts.get(i).signIn()) {
+                                toggleLoggedAccount(GameAccount.allAccounts.get(i));
                                 ui.button5.setText("Sign out of Account");
                             } else {
                                 output("Incorrect password", true);
+                                filehandler.saveObject(GameAccount.allAccounts, file);
                             }
                         }
                     }
@@ -331,7 +341,7 @@ public class PropertiesManager {
      * displays the top players and their score to the user
      */
     private void displayLeaderboards() {
-        if (GameAccount.allAccounts.getLength() == 0) {
+        if (GameAccount.allAccounts.getLength() == 1) {
             output("No Accounts Have Been Created!", true);
             return;
         }
@@ -347,7 +357,7 @@ public class PropertiesManager {
                             GameAccount[allAccounts.getLength()]), 0, 
                             GameAccount.allAccounts.get(i).totalPoints,
                             leaderBoards.length), leaderBoards);
-            if(spot < MAX_LEADERBOARDS) leaderBoards[spot] = GameAccount.allAccounts.get(i);
+            if(spot < MAX_LEADERBOARDS) leaderBoards[spot] = GameAccount.allAccounts.get(i + 1);
         }
         String text = "Best Players of All Time in Space Monster Shoot Em Up!!! \n";
         for (int i = 0; i < leaderBoards.length; i++) {
@@ -362,7 +372,7 @@ public class PropertiesManager {
      *
      * @param account the account being logged in
      */
-    private void toggleLoggedAccount(GameAccount account) {
+    public void toggleLoggedAccount(GameAccount account) {
         accountLoggedIn = account;
         ui.labLoggedInName.setText("(" + account.name + ")");
         ui.labLoggedInPoints.setText("(" + account.totalPoints + ")");
@@ -418,7 +428,6 @@ public class PropertiesManager {
      */
     public void loadGame(boolean tutorial) {
         GUEST_ACCOUNT.gamesPlayed++;
-        System.out.println("difficulty = " + difficulty);
         if(!accountLoggedIn.equals(GUEST_ACCOUNT)) accountLoggedIn.gamesPlayed++;
         ui.dispose();
         new Engine(this, tutorial);

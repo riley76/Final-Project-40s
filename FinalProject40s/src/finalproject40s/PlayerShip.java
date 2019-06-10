@@ -3,7 +3,6 @@ package finalproject40s;
 import gameTools.Constants;
 import gameTools.Coordinates;
 import gameTools.Image;
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;

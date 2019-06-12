@@ -50,7 +50,8 @@ public class Bullet extends GameCharacter {
     private void checkShips() {
         for (int i = 0; i < shipList.getLength(); i++) {
             if(isColliding(shipList.get(i)) && ship.shipNumber != shipList.get(i).shipNumber) {
-                shipList.get(i).hit(damage);
+                if(ship.shipNumber == Constants.PLAYER_SHIP_NUMBER) shipList.get(i).hit(damage, false);
+                else shipList.get(i).selfHit(damage);
                 shutDown();
                 return;
             }

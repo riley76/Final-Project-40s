@@ -21,8 +21,7 @@ import javax.swing.Timer;
         canFire= true;
         image.setDebug("", Color.ORANGE);
         health = Constants.BASE_ENEMY_HEALTH;
-        speed = Constants.BASE_SHIP_MOVEMENT;
-        coordinates.amount = speed;
+        speed = coordinates.amount;
         if(difficulty <= 1)damageOutput = Constants.BASE_SHIP_DAMAGE * 2;
         else damageOutput = Constants.BASE_SHIP_DAMAGE;
         firingTimer = new Timer((2 + difficulty) * 600, new ActionListener() {

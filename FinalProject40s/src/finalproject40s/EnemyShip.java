@@ -13,13 +13,6 @@ public abstract class EnemyShip extends Ship {
     public static PlayerShip player;
     public Timer directionTimer;
     
-    public void changeDirection() {
-        int direction = Constants.randomDirection(3);
-        while(direction == coordinates.direction) {
-            direction = Constants.randomDirection(3);
-        }
-        coordinates.direction = direction;
-    } 
     
     public EnemyShip(Image image, int amount, Engine engine) {
         super(image, amount,engine);
@@ -32,31 +25,22 @@ public abstract class EnemyShip extends Ship {
             public void actionPerformed(ActionEvent e) {
                 changeDirection();
                 if(coordinates.direction == Constants.SOUTH_DIRECTION) {
-                    directionTimer.setDelay(Constants.STARTING_DIRECTION_DELAY);
-                } else directionTimer.setDelay(650);
+                    directionTimer.setDelay(Constants.STARTING_DIRECTION_DELAY 
+                            + randomDirectionTime());
+                } else directionTimer.setDelay(Constants.STARTING_DIRECTION_DELAY / 2 + randomDirectionTime());
             }
         });
         directionTimer.start();
     }
     
-    /**
-     * when the ship is destroyed,. it is removed from the list and is hidden
-     * from the user
-     * @return if the ship was removed or not
-     */
-    public boolean destroyed() {
-        if(!isAlive) return false;
-        engine.addPoint(this);
-        shutDown();
-        return shipList.remove(this);
-    }
     
     @Override
-    public void hit(int damage) {
+    public void hit(int damage, boolean shipDamage) {
         if(!isAlive) return; // to avoid false errors
         health-= damage;
         if(health <= 0) {
             destroyed();
+            engine.addPoint(this);
         }
     }
     
@@ -68,7 +52,7 @@ public abstract class EnemyShip extends Ship {
         for (int i = 0; i < engine.walls.length; i++) {
             if(isColliding(engine.walls[i]) && isAlive) {
                 if(engine.walls[i].isEndWall) {
-                  engine.player.hit(4 - engine.manager.difficulty);
+                  engine.player.hit(4 - engine.manager.difficulty, false);
                   Constants.errorCheck(destroyed(), "Ship destroyed in walls");
                 } else coordinates.bounceOff(engine.walls[i].coordinates);
             }
@@ -96,5 +80,30 @@ public abstract class EnemyShip extends Ship {
         redraw();
         checkWalls();
     }
+    
+    /**
+     * creates a "random" number to add to the timer for direction Change
+     * @return the amount of time to add to the timer
+     */
+    protected int randomDirectionTime() {
+        int number = 1;
+        while(!Constants.isEven(number)) {
+            number = Constants.random(2, 112);
+        }
+        number = number * 10;
+        return number;
+    }
+        
+    /**
+     * randomly set the direction of the ship to one of 3 possibilities, south,
+     * west or east
+     */
+    public void changeDirection() {
+        int direction = Constants.randomDirection(3);
+        while(direction == coordinates.direction) {
+            direction = Constants.randomDirection(3);
+        }
+        coordinates.direction = direction;
+    } 
     
 }

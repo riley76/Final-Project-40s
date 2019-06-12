@@ -14,7 +14,7 @@ public class PlayerShip extends Ship {
     private Timer[] upgradeTimers;
     private int[] upgradeCount;
     public boolean invincible;
-    private final Coordinates startingCoordinates;
+    public final Coordinates startingCoordinates;
 
     /**
      * constructor for the player ship
@@ -233,8 +233,8 @@ public class PlayerShip extends Ship {
      * @param damage the amount of damage the player has been dealt
      */
     @Override
-    public void hit(int damage) {
-        if (!invincible) {
+    public void hit(int damage, boolean shipDamage) {
+        if (!invincible && isAlive) {
             health -= damage;
             engine.playerHealthBar.setValue(health);
             if (health <= 0) {
@@ -247,7 +247,7 @@ public class PlayerShip extends Ship {
                 coordinates.changeCoordinates(startingCoordinates);
                 damageOutput = Constants.BASE_SHIP_DAMAGE;
                 health = Constants.BASE_PLAYER_HEALTH;
-                speed = Constants.BASE_SHIP_MOVEMENT * 2;
+                speed = (int)(Constants.BASE_SHIP_MOVEMENT * 1.5);
                 firingTimer.setInitialDelay(1100);
                 redraw();
                 show();
@@ -272,7 +272,7 @@ public class PlayerShip extends Ship {
      */
     private void adminControls(KeyEvent evt) {
         if (evt.getKeyCode() == KeyEvent.VK_1) {
-            hit(1);
+            hit(1, false);
         } else if (evt.getKeyCode() == KeyEvent.VK_2) {
             engine.spawnShip();
             shipList.get(shipList.getLength() - 1).redraw();
@@ -286,7 +286,15 @@ public class PlayerShip extends Ship {
         } else if (evt.getKeyCode() == KeyEvent.VK_5) {
             engine.addPoint(this);
         } else if (evt.getKeyCode() == KeyEvent.VK_6) {
-            engine.spawnBoss();
+            if(engine.bossHealth.isVisible()) {
+                Coordinates c = Ship.shipList.get(1).coordinates;
+                System.out.println("Boss Stats Below:");
+                System.out.println("Bootom = " + c.bottom +"x = " + c.x + ", y = " 
+                        + c.y + ", height = " + c.height + ", width = " + c.width 
+                        + ", health = " + health + ", damage =  " + damageOutput 
+                        + "speed = " + speed);
+                System.out.println("Boss Stats Above:");
+            } else engine.spawnBoss();
         }
     }
 

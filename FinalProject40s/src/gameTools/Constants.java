@@ -20,7 +20,7 @@ import javax.swing.JTextArea;
     public final static int EXITED_GAME        = 3;
     
     public final static int BASE_SHIP_MOVEMENT = 2;
-    public final static int BASE_LIVES         = 3;
+    public final static int BASE_LIVES         = 5;
     public final static int BASE_PLAYER_HEALTH = 6;
     public final static int BASE_BOSS_HEALTH   = 40;
     public final static int BASE_SHIP_DAMAGE   = 1;
@@ -36,7 +36,7 @@ import javax.swing.JTextArea;
     public final static int ENEMY_TYPE_BULLKY = 3;
     public final static int POINTS_TO_BOSS    = 50; 
     
-    public final static int STARTING_DIRECTION_DELAY = 1950;
+    public final static int STARTING_DIRECTION_DELAY = 700;
     
     public final static int NUMBER_OF_UPGRADES = 5;
     public final static int NUMBER_OF_UPGRADE_SLOTS = 3;

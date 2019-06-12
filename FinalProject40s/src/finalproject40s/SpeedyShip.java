@@ -15,14 +15,9 @@ public class SpeedyShip extends EnemyShip {
         image.setDebug("", Color.CYAN);
         canFire= true;
         health = Constants.BASE_ENEMY_HEALTH / 2;
-        if(difficulty <= 1) {
-            damageOutput = Constants.BASE_SHIP_DAMAGE * 2;
-            speed = (int) (Constants.BASE_SHIP_MOVEMENT * 2.5);
-        }
-        else {
-            damageOutput = Constants.BASE_SHIP_DAMAGE;
-            speed = Constants.BASE_SHIP_MOVEMENT * 2;
-        }
+        if(difficulty <= 1) damageOutput = Constants.BASE_SHIP_DAMAGE * 2;
+        else damageOutput = Constants.BASE_SHIP_DAMAGE;
+        speed = (int)(Constants.BASE_SHIP_MOVEMENT * 1.5);
         coordinates.amount = speed;
         firingTimer = new Timer((2 + difficulty) * 305, new ActionListener() {
             @Override

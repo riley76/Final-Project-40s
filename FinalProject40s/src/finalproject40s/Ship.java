@@ -20,7 +20,7 @@ public abstract class Ship extends GameCharacter{
     public static LinkedList<Ship> shipList = new LinkedList<>();
 
     public Ship(Image hitbox, int amount, Engine engine) {
-        super(hitbox, amount, 10);
+        super(hitbox, amount, 9);
         shipList.add(this);
         this.engine = engine;
         canFire = true;
@@ -41,7 +41,7 @@ public abstract class Ship extends GameCharacter{
      * damages the ship by the damage specified
      * @param damage the amount to remove from health
      */
-    public abstract void hit(int damage);
+    public abstract void hit(int damage, boolean shipDamage);
 
     /**
      * checks to see if this ship is colliding with any walls
@@ -50,7 +50,7 @@ public abstract class Ship extends GameCharacter{
         for (int i = 0; i < engine.walls.length; i++) {
             if(isColliding(engine.walls[i]) && isAlive) {
                 if(engine.walls[i].isEndWall && shipNumber != Constants.PLAYER_SHIP_NUMBER) {
-                  engine.player.hit(3 - engine.manager.difficulty);
+                  engine.player.hit(3 - engine.manager.difficulty, false);
                   shutDown();
                 } else coordinates.stickTo(engine.walls[i].coordinates);
             }
@@ -64,8 +64,8 @@ public abstract class Ship extends GameCharacter{
         for (int i = 0; i < shipList.getLength(); i++) {
             if(isColliding(shipList.get(i)) && shipList.get(i).shipNumber != 
                     shipNumber && isAlive) {
-                hit(shipList.get(i).damageOutput * 2);
-                shipList.get(i).hit(damageOutput * 2);
+                hit(shipList.get(i).damageOutput * 2, true);
+                shipList.get(i).hit(damageOutput * 2, true);
                 return;
             }
         }
@@ -86,6 +86,24 @@ public abstract class Ship extends GameCharacter{
             return true;
         }
         return false;
+    }
+
+    public void selfHit(int damage) {
+        if(!isAlive) return; // to avoid false errors
+        health-= damage;
+        if(health <= 0) {
+            destroyed();
+        }
+    }
+    
+    /**
+     * when the ship is destroyed,. it is removed from the list and is hidden
+     * from the user
+     * @return if the ship was removed or not
+     */
+    public boolean destroyed() {
+        shutDown();
+        return shipList.remove(this);
     }
     
     

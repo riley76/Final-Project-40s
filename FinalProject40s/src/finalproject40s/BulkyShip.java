@@ -14,11 +14,10 @@ public class BulkyShip extends EnemyShip {
         super(image, Constants.BASE_SHIP_MOVEMENT / 2,engine);
         image.setDebug("", Color.green);
         canFire= true;
-        speed = Constants.BASE_SHIP_MOVEMENT / 2;
+        speed = coordinates.amount;
         health = Constants.BASE_ENEMY_HEALTH + (5 - difficulty);
-        if(difficulty <= 1)damageOutput = Constants.BASE_SHIP_DAMAGE * 4;
+        if(difficulty <= 1)damageOutput = Constants.BASE_SHIP_DAMAGE * 3;
         else damageOutput = Constants.BASE_SHIP_DAMAGE * 2;
-        coordinates.amount = speed;
         firingTimer = new Timer((2 + difficulty) * 675, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

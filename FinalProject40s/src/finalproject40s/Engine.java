@@ -17,6 +17,7 @@ import javax.swing.Timer;
  * @since 9-Apr-2019
  */
 public class Engine {
+    private final int BASE_SPAWNING_SPEED;
     public int points;
     public int lives;
     private int timeMinutes;
@@ -79,8 +80,8 @@ public class Engine {
                 }
             }
         });
-        spawnTimer = new Timer( 3000 +(2000 * this.manager.difficulty),
-                new ActionListener() {
+        BASE_SPAWNING_SPEED = 1825 +(650 * this.manager.difficulty);
+        spawnTimer = new Timer(BASE_SPAWNING_SPEED, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (isRunning) {
@@ -145,6 +146,7 @@ public class Engine {
      * spawns one of the regular enemy types
      */
     public void spawnShip() {
+        
         int shipType = getShipType();
         if(shipType == Constants.ENEMY_TYPE_GRUNT) {
             GruntShip ship = new GruntShip(new Image(getXCoordinates(),
@@ -168,7 +170,7 @@ public class Engine {
     }
 
     /**
-     * spawns a bullet above the ship that fired it
+     * spawns a bullet above(or below) the ship that fired it
      * @param ship the ship that fired it
      * @return if a bullet was spawned or not
      */

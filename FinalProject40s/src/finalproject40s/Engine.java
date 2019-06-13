@@ -22,6 +22,7 @@ public class Engine {
     public int lives;
     private int timeMinutes;
     private int timeSeconds;
+    private int partSeconds;
     private Timer playingTime;
     private Timer spawnTimer;
     public Wall[] walls;
@@ -60,13 +61,16 @@ public class Engine {
         lives = Constants.BASE_LIVES - 3 + manager.difficulty;
         buildPresetImages();
         ui.setVisible(true);
-        playingTime = new Timer(1000, new ActionListener() {
+        playingTime = new Timer(Constants.ONE_SECOND / 100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (isRunning) {
-//                    background.swap();
-                    timeSeconds++;
-                    if (timeSeconds >= 60) {
+                    background.swap();
+                    partSeconds++;
+                    if(partSeconds >= 100) {
+                        timeSeconds++;
+                        partSeconds -= 100;
+                    } if (timeSeconds >= 60) {
                         timeSeconds -= 60;
                         timeMinutes++;
                     }
@@ -312,7 +316,9 @@ public class Engine {
         bossHealth.setVisible(false);
         ui.add(bossHealth);
         background = new Background(ui);
-        ui.add(background.image.picture);
+        Image gui = new Image(10, 910, 1625, 125);
+        gui.setDebug("dfhadgtsef", Color.BLACK);
+        add(gui.picture);
     }
 
     /**
@@ -355,9 +361,10 @@ public class Engine {
      * @param object the Jlabel to add
      */
     public void add(JLabel object) {
-        if(object == null) System.out.println("Error adding Object");
+        if(object == null) System.out.println("Error adding Object To UI");
         ui.add(object);
-        ui.add(background.image.picture);
+        ui.add(background.top.picture);
+        ui.add(background.bottom.picture);
     }
     
     

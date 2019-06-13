@@ -237,21 +237,21 @@ public class PlayerShip extends Ship {
         if (!invincible && isAlive) {
             health -= damage;
             engine.playerHealthBar.setValue(health);
-            if (health <= 0) {
-                hide();
-                engine.changeLives(-1);
-                Constants.output("You Died!! \nYou have " + engine.lives + " Lives left", true);
-                if (engine.lives <= 0) {
-                    engine.exit(Constants.LOST_GAME);
-                }
-                coordinates.changeCoordinates(startingCoordinates);
-                damageOutput = Constants.BASE_SHIP_DAMAGE;
-                health = Constants.BASE_PLAYER_HEALTH;
-                speed = (int)(Constants.BASE_SHIP_MOVEMENT * 1.5);
-                firingTimer.setInitialDelay(1100);
-                redraw();
-                show();
+        }
+        if (health <= 0) {
+            hide();
+            engine.changeLives(-1);
+            Constants.output("You Died!! \nYou have " + engine.lives + " Lives left", true);
+            if (engine.lives <= 0) {
+                engine.exit(Constants.LOST_GAME);
             }
+            coordinates.changeCoordinates(startingCoordinates);
+            damageOutput = Constants.BASE_SHIP_DAMAGE;
+            health = Constants.BASE_PLAYER_HEALTH;
+            speed = (int)(Constants.BASE_SHIP_MOVEMENT * 1.5);
+            firingTimer.setInitialDelay(1100);
+            redraw();
+            show();
         }
 
         engine.playerHealthBar.setValue(health);

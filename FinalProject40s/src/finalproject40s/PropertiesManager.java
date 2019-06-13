@@ -243,6 +243,7 @@ public class PropertiesManager {
             
             if (accountLoggedIn.name.equalsIgnoreCase("Guest Stats")) {
                 GameAccount.allAccounts = filehandler.openObject(file);
+                if(GameAccount.allAccounts == null) filehandler.saveObject(allAccounts, "Data.rw");
                 String input = options("What account do you want", GameAccount.getNames());
                 if (input.equalsIgnoreCase(GameAccount.getNames()[0])) {
                     toggleLoggedAccount(new GameAccount());

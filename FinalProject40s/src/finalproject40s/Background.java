@@ -3,6 +3,7 @@ package finalproject40s;
 
 import gameTools.GameObject;
 import gameTools.Image;
+import java.awt.Color;
 
 /**
  * Background.java - 
@@ -10,38 +11,50 @@ import gameTools.Image;
  * @author riley.w
  * @since 22-May-2019
  */
- class Background extends GameObject{
+ class Background {
         
-    final int NUMBER_OF_IMAGES = 326; 
+    final int MAX_BOTTOM = 500; 
+    final int STARTING_TOP = -880;
+    final int STARTING_BOTTOM = 10;
     final int DIFFERENCE = 5;
-    int current;
     UIGame ui;
-//    Image[] images = new Image[NUMBER_OF_IMAGES];  
+    Image top;
+    Image bottom;
+    
 
     Background(UIGame ui) {
-        super(new Image(10, 10, 1625, 898));
-//        current = 0;
+        super();
         this.ui = ui;
-        image.picture.setIcon(new 
+        top = new Image(10, -STARTING_TOP, 1620, 898);
+        top.picture.setIcon(new 
             javax.swing.ImageIcon(getClass().getResource("/media/space1.jpg")));
+        bottom = new Image(10, STARTING_BOTTOM, 1620, 898);
+        bottom.picture.setIcon(new 
+        javax.swing.ImageIcon(getClass().getResource("/media/space1.jpg")));
+        
+        
 //        for (int i = 0; i < NUMBER_OF_IMAGES; i++) {
-//            images[i] = image;
+//            images[i] = new Image(image.getX(), image.getY(), image.getWidth(), image.getHeight());
 //            if(i != 0) {
 //                int y = images[i - 1].getY() + DIFFERENCE; 
-//                images[i].show();
-//                images[i].picture.setBounds(images[i].getX(), images[i].getY(), images[i].getWidth(), images[i].getHeight());
+//                images[i].picture.setBounds(image.getX(), y, image.getWidth(), image.getHeight());
 //            } 
-//            this.ui.add(images[i].picture);
 //        }
-//        images[0].show();
     }
 //
-//    public void swap() {
-//        images[current].hide();
-//        if(current  == NUMBER_OF_IMAGES - 1) current = 0;
-//        else current++;
-//        images[current].show();
-//    }
+    public void swap() {
+        int yBottom = bottom.getY() + DIFFERENCE;
+        int yTop = top.getY() + DIFFERENCE;
+        if(yBottom >= MAX_BOTTOM) {
+            yBottom = STARTING_BOTTOM;
+        } else if(yTop >= MAX_BOTTOM) {
+            yTop = STARTING_TOP;
+        }
+        top.picture.setBounds(top.getX(), yTop, top.getWidth(), top.getHeight());
+        bottom.picture.setBounds(bottom.getX(), yBottom, bottom.getWidth(), bottom.getHeight());
+        ui.add(top.picture);
+        ui.add(bottom.picture);
+    }
     
     
     

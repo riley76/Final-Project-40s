@@ -113,6 +113,9 @@ public class FileHandler <T>
         catch (IOException ex) {                            // file path error
             System.out.println("I/O error");
         }
+        catch (NullPointerException err) {
+            System.out.println("Null error " + err.toString());
+        }
         return null;                                        // error caught
     }
     
@@ -128,6 +131,7 @@ public class FileHandler <T>
             return saveObject(data, file.getAbsolutePath());
         }
         catch(NullPointerException e) {
+            System.out.println("saveObject null error");
             return false;
         }
     }
@@ -141,6 +145,7 @@ public class FileHandler <T>
      */
     public boolean saveObject(T data, String filename) {
         try {
+            System.out.println("saving object");
             File file = new File(filename);
             if (!file.exists()) file.createNewFile();
             FileOutputStream   stream = new FileOutputStream(filename);

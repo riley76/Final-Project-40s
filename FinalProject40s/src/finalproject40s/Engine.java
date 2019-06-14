@@ -122,13 +122,14 @@ public class Engine {
      * @param exitType the reason why the exit is happening
      */
     public void exit(int exitType) {
-        ui.dispose();
-        isRunning = false;
-        manager.GUEST_ACCOUNT.pointsInLastGame = points;
-        if (!manager.GUEST_ACCOUNT.equals(manager.accountLoggedIn)) {
+        System.exit(0);
+        GameAccount.allAccounts.front().pointsInLastGame = points;
+        if (!GameAccount.allAccounts.front().equals(manager.accountLoggedIn)) {
             manager.accountLoggedIn.pointsInLastGame = points;
         }
-        System.exit(0);
+        ui.dispose();
+        manager.filehandler.saveObject(GameAccount.allAccounts, manager.file);
+        isRunning = false;
         if (exitType == Constants.EXITED_GAME) {
             Constants.output("You Exited the Game " + "\n You played for " + timeMinutes
                     + " minutes and " + timeSeconds + " seconds \n You gained "
@@ -316,6 +317,7 @@ public class Engine {
         bossHealth.setVisible(false);
         ui.add(bossHealth);
         background = new Background(ui);
+        background.addToUI();
         Image gui = new Image(10, 910, 1625, 125);
         gui.setDebug("dfhadgtsef", Color.BLACK);
         add(gui.picture);
@@ -363,8 +365,7 @@ public class Engine {
     public void add(JLabel object) {
         if(object == null) System.out.println("Error adding Object To UI");
         ui.add(object);
-        ui.add(background.top.picture);
-        ui.add(background.bottom.picture);
+        background.addToUI();
     }
     
     

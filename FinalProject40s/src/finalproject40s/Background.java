@@ -1,9 +1,7 @@
 
 package finalproject40s;
 
-import gameTools.GameObject;
 import gameTools.Image;
-import java.awt.Color;
 
 /**
  * Background.java - 
@@ -13,47 +11,54 @@ import java.awt.Color;
  */
  class Background {
         
-    final int MAX_BOTTOM = 500; 
-    final int STARTING_TOP = -880;
-    final int STARTING_BOTTOM = 10;
-    final int DIFFERENCE = 5;
+    final int MAX_BOTTOM = 925; 
+    final int DIFFERENCE = 2;
+    final int IMAGES = 2;
+    final int HEIGHT = 898;
+    final int WIDTH = 1625;
+    final int X_VALUE = 10;
+    final int TOP = 0;
     UIGame ui;
     Image top;
+    Image middle;
     Image bottom;
+    Image[] images = new Image[IMAGES];
     
 
     Background(UIGame ui) {
-        super();
         this.ui = ui;
-        top = new Image(10, -STARTING_TOP, 1620, 898);
-        top.picture.setIcon(new 
-            javax.swing.ImageIcon(getClass().getResource("/media/space1.jpg")));
-        bottom = new Image(10, STARTING_BOTTOM, 1620, 898);
-        bottom.picture.setIcon(new 
-        javax.swing.ImageIcon(getClass().getResource("/media/space1.jpg")));
-        
-        
-//        for (int i = 0; i < NUMBER_OF_IMAGES; i++) {
-//            images[i] = new Image(image.getX(), image.getY(), image.getWidth(), image.getHeight());
-//            if(i != 0) {
-//                int y = images[i - 1].getY() + DIFFERENCE; 
-//                images[i].picture.setBounds(image.getX(), y, image.getWidth(), image.getHeight());
-//            } 
-//        }
-    }
-//
-    public void swap() {
-        int yBottom = bottom.getY() + DIFFERENCE;
-        int yTop = top.getY() + DIFFERENCE;
-        if(yBottom >= MAX_BOTTOM) {
-            yBottom = STARTING_BOTTOM;
-        } else if(yTop >= MAX_BOTTOM) {
-            yTop = STARTING_TOP;
+        final int[] STARTING_POSITION = new int[IMAGES];
+        for (int i = 0; i < IMAGES; i++) {
+            STARTING_POSITION[i] = 10 - (i * 890);
+            images[i] = new Image(X_VALUE, STARTING_POSITION[i] , WIDTH, HEIGHT);
+            images[i].picture.setIcon(new javax.swing.ImageIcon(
+                    getClass().getResource("/media/space1.jpg")));
         }
-        top.picture.setBounds(top.getX(), yTop, top.getWidth(), top.getHeight());
-        bottom.picture.setBounds(bottom.getX(), yBottom, bottom.getWidth(), bottom.getHeight());
-        ui.add(top.picture);
-        ui.add(bottom.picture);
+        
+    }
+    
+    /**
+     * moves all the images down, and to the top if off screen
+     */
+    public void swap() {
+        int[] yValues = new int[IMAGES];
+        for (int i = 0; i < IMAGES; i++) {
+            yValues[i] = images[i].getY() + DIFFERENCE;
+            if(yValues[i] >= MAX_BOTTOM) yValues[i] = TOP;
+            images[i].picture.setBounds(X_VALUE, yValues[i], WIDTH, HEIGHT);
+            images[i].picture.setIcon(new javax.swing.ImageIcon(
+                    getClass().getResource("/media/space1.jpg")));
+        }
+        addToUI();
+    }
+
+    /**
+     * adds all images to the ui
+     */
+    public void addToUI() {
+        for (int i = 0; i < IMAGES; i++) {
+            ui.add(images[i].picture);
+        }
     }
     
     

@@ -36,13 +36,13 @@ import javax.swing.JTextArea;
     public final static int ENEMY_TYPE_BULLKY = 3;
     public final static int POINTS_TO_BOSS    = 50; 
     
-    public final static int STARTING_DIRECTION_DELAY = 700;
+    public final static int STARTING_DIRECTION_DELAY = 500;
     
     public final static int NUMBER_OF_UPGRADES = 5;
     public final static int NUMBER_OF_UPGRADE_SLOTS = 3;
     public final static int ONE_SECOND = 1000;
     public final static int UPGRADE_COUNT = 12;
-    public final static int PLAYER_FIRING_DELAY = 1100;
+    public final static int PLAYER_FIRING_DELAY = 1;
     
     
     public final static Font BASE_FONT = new Font("Tahoma", 1, 14);

@@ -10,6 +10,9 @@ import gameTools.FileHandler;
 import gameTools.LinkedList;
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -23,7 +26,6 @@ public class PropertiesManager {
 
     final String[] MENUS = {"Main Section", "Rules and Explanations", "Options",
         "Leaderboards/Accounts"};
-    final GameAccount GUEST_ACCOUNT = new GameAccount("Guest Stats");
     final int MAX_LEADERBOARDS = 10;
     String currentMenu = MENUS[0];
     int difficulty;
@@ -34,6 +36,10 @@ public class PropertiesManager {
     static UiMenu ui;
     static boolean accountsCreated = false;
     GameAccount accountLoggedIn;
+    String path = "/media/Data.rw";
+    FileHandler< LinkedList<GameAccount> > filehandler = new FileHandler<>(path);
+    File file = filehandler.convertToFile(path);
+    
 
     /**
      * default constructor for this class
@@ -42,7 +48,6 @@ public class PropertiesManager {
         usingArrowKeys = true;
         difficulty = 3;
         adminMode = true;
-        accountLoggedIn = GUEST_ACCOUNT;
         play();
     }
 
@@ -50,6 +55,21 @@ public class PropertiesManager {
      * starts the menu for the game
      */
     public void play() {
+        
+        GameAccount.allAccounts = filehandler.openObject(file);
+        if(GameAccount.allAccounts == null) {
+            GameAccount.allAccounts = new LinkedList<GameAccount>();
+            GameAccount.allAccounts.add(new GameAccount("Guest Stats"));
+            if(file == null) try {
+                file = new File(path);
+                file.createNewFile();
+            } catch (IOException ex) {
+                System.out.println("error IOException");
+            }
+            filehandler.saveObject(GameAccount.allAccounts, file);
+            System.out.println("Made Array");
+        }
+        if(GameAccount.allAccounts != null) accountLoggedIn = allAccounts.front();
         ui = new UiMenu(this);
         ui.setSize(940, 550);
         ui.setLocationRelativeTo(null);
@@ -237,13 +257,7 @@ public class PropertiesManager {
             }
         } else if (currentMenu.equalsIgnoreCase(MENUS[3])) {
             
-            String path = "/media/Data.rw";
-            FileHandler< LinkedList<GameAccount> > filehandler = new FileHandler<>(path);
-            File file = filehandler.convertToFile(path);
-            
             if (accountLoggedIn.name.equalsIgnoreCase("Guest Stats")) {
-                GameAccount.allAccounts = filehandler.openObject(file);
-                if(GameAccount.allAccounts == null) filehandler.saveObject(allAccounts, "Data.rw");
                 String input = options("What account do you want", GameAccount.getNames());
                 if (input.equalsIgnoreCase(GameAccount.getNames()[0])) {
                     toggleLoggedAccount(new GameAccount());
@@ -251,10 +265,6 @@ public class PropertiesManager {
                     System.out.println("Saved data to " + file);
                     ui.button5.setText("Sign out of Account");
                 } else {
-                    if(GameAccount.allAccounts == null) {
-                        System.out.println("null GameAccount.allAccounts");
-                        return;
-                    }
                     for (int i = 1; i < GameAccount.allAccounts.getLength(); i++) {
                         if (GameAccount.getNames()[i].equalsIgnoreCase(input)) {
                             if (GameAccount.allAccounts.get(i).signIn()) {
@@ -269,7 +279,7 @@ public class PropertiesManager {
                 }
             } else {
                 output("(" + accountLoggedIn.name + ") is now logged out", true);
-                toggleLoggedAccount(GUEST_ACCOUNT);
+                toggleLoggedAccount(GameAccount.allAccounts.front());
                 ui.button5.setText("Sign into Account");
             }
         }
@@ -296,10 +306,6 @@ public class PropertiesManager {
                 output("Now using Arrow Keys for Movement", true);
             }
         } else if (currentMenu.equalsIgnoreCase(MENUS[3])) {
-            if (!accountsCreated) {
-                output("No Accounts to view!", true);
-                return;
-            }
             String input = options("What Account do You Want To View?", GameAccount.getNames());
             for (int i = 1; i < GameAccount.allAccounts.getLength() + 1; i++) {
                 if (input.equalsIgnoreCase(GameAccount.getNames()[i -1])) {
@@ -374,6 +380,7 @@ public class PropertiesManager {
      * @param account the account being logged in
      */
     public void toggleLoggedAccount(GameAccount account) {
+        if(account == null) return;
         accountLoggedIn = account;
         ui.labLoggedInName.setText("(" + account.name + ")");
         ui.labLoggedInPoints.setText("(" + account.totalPoints + ")");
@@ -418,8 +425,8 @@ public class PropertiesManager {
      * adds a point to the appropriate account(s)
      */
     public void addPoint() {
-        if(!accountLoggedIn.equals(GUEST_ACCOUNT)) accountLoggedIn.totalPoints++;
-        GUEST_ACCOUNT.totalPoints++;
+        if(!accountLoggedIn.equals(GameAccount.allAccounts.front())) accountLoggedIn.totalPoints++;
+        GameAccount.allAccounts.front().totalPoints++;
         
     }
     
@@ -428,8 +435,8 @@ public class PropertiesManager {
      * @param tutorial if using the tutorial mode or not
      */
     public void loadGame(boolean tutorial) {
-        GUEST_ACCOUNT.gamesPlayed++;
-        if(!accountLoggedIn.equals(GUEST_ACCOUNT)) accountLoggedIn.gamesPlayed++;
+        GameAccount.allAccounts.front().gamesPlayed++;
+        if(!accountLoggedIn.equals(GameAccount.allAccounts.front())) accountLoggedIn.gamesPlayed++;
         ui.dispose();
         new Engine(this, tutorial);
     } 
